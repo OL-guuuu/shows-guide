@@ -830,6 +830,28 @@ nav{
       </div>
     </div>
 
+    <!-- API KEY CARD -->
+    <div id="apikey-card" style="background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div style="font-size:22px;">🔑</div>
+      <div style="flex:1;min-width:200px;">
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;">Anthropic API Key</div>
+        <div style="font-size:11px;color:var(--text2);">يُحفظ في متصفحك فقط — لا يظهر في الكود أبداً ✅</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:260px;">
+        <div style="position:relative;flex:1;">
+          <input type="password" id="apikey-input"
+            placeholder="sk-ant-api03-..."
+            style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:9px 36px 9px 12px;color:var(--text);font-family:monospace;font-size:12px;direction:ltr;outline:none;transition:border-color .2s;"
+            onfocus="this.style.borderColor='var(--accent)'"
+            onblur="this.style.borderColor='var(--border)'"
+            onkeydown="if(event.key==='Enter')saveAPIKey()">
+          <button onclick="toggleAPIKeyVisibility()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;" id="apikey-eye">👁</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveAPIKey()">حفظ</button>
+      </div>
+      <div id="apikey-status" style="font-size:11px;width:100%;padding-right:36px;display:none;"></div>
+    </div>
+
     <div class="dash-stats">
       <div class="dstat"><div class="dstat-n" id="d-total">0</div><div class="dstat-l">إجمالي المسلسلات</div></div>
       <div class="dstat"><div class="dstat-n" id="d-end">0</div><div class="dstat-l">نهاية العالم</div></div>
@@ -1493,6 +1515,10 @@ function renderStatsTable(){
 // DASHBOARD RENDER
 // ════════════════════════════════════
 function renderDash(){
+  // show API key status
+  const saved = !!getAIKey();
+  showAPIKeyStatus(saved);
+
   document.getElementById('d-total').textContent=shows.length;
   document.getElementById('d-end').textContent=shows.filter(s=>s.filter==='end').length;
   document.getElementById('d-spy').textContent=shows.filter(s=>s.filter==='spy').length;
@@ -1691,6 +1717,43 @@ document.getElementById('confirm-overlay').addEventListener('click',e=>{
 });
 
 // ════════════════════════════════════
+// API KEY MANAGEMENT
+// ════════════════════════════════════
+function saveAPIKey(){
+  const val = document.getElementById('apikey-input').value.trim();
+  if(!val){ toast('⚠️ أدخل المفتاح أولاً'); return; }
+  if(!val.startsWith('sk-ant-')){
+    toast('⚠️ المفتاح يجب أن يبدأ بـ sk-ant-');
+    return;
+  }
+  setAIKey(val);
+  showAPIKeyStatus(true);
+  toast('✅ تم حفظ المفتاح بنجاح!');
+}
+
+function toggleAPIKeyVisibility(){
+  const inp = document.getElementById('apikey-input');
+  const eye = document.getElementById('apikey-eye');
+  if(!inp) return;
+  inp.type = inp.type==='password' ? 'text' : 'password';
+  eye.textContent = inp.type==='password' ? '👁' : '🙈';
+}
+
+function showAPIKeyStatus(saved){
+  const status = document.getElementById('apikey-status');
+  const input  = document.getElementById('apikey-input');
+  if(!status) return;
+  if(saved){
+    status.style.display='block';
+    status.innerHTML='<span style="color:var(--green)">✅ المفتاح محفوظ ويعمل — يمكنك الآن استخدام الذكاء الاصطناعي</span>';
+    if(input) input.value = '••••••••••••••••••••••••';
+  } else {
+    status.style.display='block';
+    status.innerHTML='<span style="color:var(--amber)">⚠️ لم يتم حفظ مفتاح بعد — أدخل مفتاحك للاستفادة من ميزات الذكاء الاصطناعي</span>';
+  }
+}
+
+// ════════════════════════════════════
 // POSTER FETCH (TVMaze — free, no key)
 // ════════════════════════════════════
 async function fetchPoster(title){
@@ -1743,8 +1806,8 @@ async function runDiscovery(append){
   const prevShown = (window._discResults||[]).map(r=>r.title.toLowerCase());
   const exclude = [...alreadyHave, ...prevShown];
 
-  if(!AI_KEY || AI_KEY==='PUT_YOUR_KEY_HERE'){
-    toast('⚠️ AI Key غير مضبوط'); return;
+  const AI_KEY=getAIKey(); if(!AI_KEY){
+    toast('⚠️ أدخل API Key أولاً في لوحة التحكم'); return;
   }
 
   btn.classList.add('loading'); btn.disabled=true;
@@ -1994,16 +2057,18 @@ async function addAllDiscovered(){
 // ════════════════════════════════════
 // AI CLASSIFICATION
 // ════════════════════════════════════
-const AI_KEY = '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';
+const AI_KEY_STORAGE = 'anthropic_api_key_v1';
+function getAIKey(){ return localStorage.getItem(AI_KEY_STORAGE)||''; }
+function setAIKey(k){ localStorage.setItem(AI_KEY_STORAGE, k.trim()); }
 
 async function classifyWithAI(){
   const title = document.getElementById('f-title').value.trim();
   const desc  = document.getElementById('f-desc').value.trim();
 
   if(!title && !desc){ toast('⚠️ اكتب اسم المسلسل أو وصفًا أولاً'); return; }
-  if(!AI_KEY || AI_KEY === 'PUT_YOUR_KEY_HERE'){
-    toast('⚠️ ضع API Key في الكود أولاً');
-    return;
+  const AI_KEY = getAIKey();
+  if(!AI_KEY){
+    toast('⚠️ أدخل API Key أولاً في لوحة التحكم'); return;
   }
 
   const btn = document.getElementById('ai-btn');
