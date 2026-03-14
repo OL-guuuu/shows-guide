@@ -349,6 +349,84 @@ nav{
 .confirm-box p{font-size:14px;color:var(--text);margin-bottom:20px;line-height:1.6;}
 .confirm-box .confirm-btns{display:flex;gap:10px;justify-content:center;}
 
+/* ─── PASSWORD MODAL ─── */
+.pw-modal{
+  background:var(--bg3);border:1px solid var(--border);border-radius:20px;
+  width:100%;max-width:380px;
+  animation:fadeU .3s ease;
+  overflow:hidden;
+}
+.pw-header{
+  padding:32px 28px 0;text-align:center;
+}
+.pw-lock{
+  width:60px;height:60px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(124,58,237,.15));
+  border:1px solid rgba(0,212,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin:0 auto 16px;
+}
+.pw-title{font-size:17px;font-weight:900;color:#fff;margin-bottom:6px;}
+.pw-sub{font-size:12px;color:var(--text2);}
+.pw-body{padding:24px 28px;}
+.pw-field{
+  position:relative;margin-bottom:14px;
+}
+.pw-field input{
+  width:100%;background:var(--surf);border:2px solid var(--border);
+  border-radius:11px;padding:12px 44px 12px 14px;
+  color:var(--text);font-family:inherit;font-size:14px;
+  direction:ltr;text-align:center;letter-spacing:3px;
+  outline:none;transition:border-color .25s,box-shadow .25s;
+}
+.pw-field input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,212,255,.12);
+}
+.pw-field input.error{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(239,68,68,.12);
+  animation:shake .35s ease;
+}
+.pw-toggle{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text3);cursor:pointer;
+  font-size:16px;padding:2px;transition:color .2s;
+}
+.pw-toggle:hover{color:var(--text2);}
+.pw-error{
+  font-size:11px;color:var(--red);text-align:center;
+  height:16px;margin-bottom:10px;font-weight:600;
+}
+.pw-btn{
+  width:100%;padding:12px;border-radius:11px;
+  background:linear-gradient(135deg,var(--accent),#0099cc);
+  color:#000;font-family:inherit;font-size:14px;font-weight:800;
+  border:none;cursor:pointer;transition:opacity .2s,transform .1s;
+}
+.pw-btn:hover{opacity:.9;}
+.pw-btn:active{transform:scale(.98);}
+.pw-footer{
+  padding:0 28px 24px;text-align:center;
+  font-size:11px;color:var(--text3);
+}
+.pw-attempts{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:4px;
+}
+.attempt-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--text3);transition:background .3s;
+}
+.attempt-dot.used{background:var(--red);}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)}
+  80%{transform:translateX(5px)}
+}
+
 /* ─── EXPORT MODAL ─── */
 .export-modal{
   background:var(--bg3);border:1px solid var(--border);border-radius:18px;
@@ -420,7 +498,7 @@ nav{
   <span class="nav-brand">🎬 دليل المسلسلات</span>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showView('public')">📺 الدليل</button>
-    <button class="nav-tab" onclick="showView('dashboard')">⚙️ لوحة التحكم</button>
+    <button class="nav-tab" onclick="askPassword()">⚙️ لوحة التحكم</button>
   </div>
   <div class="nav-right">
     <div class="search-wrap">
@@ -638,6 +716,37 @@ nav{
     <div class="confirm-btns">
       <button class="btn btn-ghost" onclick="closeConfirm()">إلغاء</button>
       <button class="btn btn-danger" id="confirm-ok">حذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PASSWORD MODAL ══════ -->
+<div class="overlay" id="pw-overlay">
+  <div class="pw-modal">
+    <div class="pw-header">
+      <div class="pw-lock">🔐</div>
+      <div class="pw-title">لوحة التحكم</div>
+      <div class="pw-sub">هذه المنطقة محمية — أدخل كلمة المرور للمتابعة</div>
+    </div>
+    <div class="pw-body">
+      <div class="pw-field">
+        <input type="password" id="pw-input" placeholder="••••••••"
+               maxlength="30" autocomplete="off"
+               onkeydown="if(event.key==='Enter')checkPassword()">
+        <button class="pw-toggle" onclick="togglePwVisibility()" id="pw-eye" title="إظهار/إخفاء">👁</button>
+      </div>
+      <div class="pw-error" id="pw-error"></div>
+      <button class="pw-btn" onclick="checkPassword()">دخول</button>
+    </div>
+    <div class="pw-footer">
+      <div>المحاولات المتبقية</div>
+      <div class="pw-attempts">
+        <div class="attempt-dot" id="dot-1"></div>
+        <div class="attempt-dot" id="dot-2"></div>
+        <div class="attempt-dot" id="dot-3"></div>
+        <div class="attempt-dot" id="dot-4"></div>
+        <div class="attempt-dot" id="dot-5"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1174,6 +1283,102 @@ document.getElementById('modal-overlay').addEventListener('click',e=>{
 });
 document.getElementById('confirm-overlay').addEventListener('click',e=>{
   if(e.target===document.getElementById('confirm-overlay')) closeConfirm();
+});
+
+// ════════════════════════════════════
+// PASSWORD PROTECTION
+// ════════════════════════════════════
+const DASHBOARD_PASSWORD = 'shows2025'; // ← غيّر كلمة المرور هنا
+let pwAttempts = 0;
+const MAX_ATTEMPTS = 5;
+let pwUnlocked = false;
+let pwLockedUntil = 0;
+let pendingNavBtn = null;
+
+function askPassword(){
+  // إذا كانت الجلسة مفتوحة مسبقاً
+  if(pwUnlocked){
+    doShowDashboard();
+    return;
+  }
+  // فحص القفل المؤقت
+  if(Date.now() < pwLockedUntil){
+    const secs = Math.ceil((pwLockedUntil - Date.now()) / 1000);
+    toast(`🔒 محظور لمدة ${secs} ثانية`);
+    return;
+  }
+  pendingNavBtn = event.target;
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').textContent = '';
+  updateDots();
+  document.getElementById('pw-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('pw-input').focus(), 100);
+}
+
+function checkPassword(){
+  const val = document.getElementById('pw-input').value;
+  const inp = document.getElementById('pw-input');
+  const err = document.getElementById('pw-error');
+
+  if(val === DASHBOARD_PASSWORD){
+    pwUnlocked = true;
+    pwAttempts = 0;
+    document.getElementById('pw-overlay').classList.remove('open');
+    doShowDashboard();
+    toast('✅ مرحباً! تم فتح لوحة التحكم');
+  } else {
+    pwAttempts++;
+    updateDots();
+    inp.classList.remove('error');
+    void inp.offsetWidth; // trigger reflow for animation
+    inp.classList.add('error');
+    inp.value = '';
+
+    if(pwAttempts >= MAX_ATTEMPTS){
+      pwLockedUntil = Date.now() + 60000; // قفل دقيقة
+      err.textContent = '🔒 تم القفل لمدة 60 ثانية';
+      document.getElementById('pw-overlay').classList.remove('open');
+      pwAttempts = 0;
+      updateDots();
+    } else {
+      const remaining = MAX_ATTEMPTS - pwAttempts;
+      err.textContent = `❌ كلمة المرور خاطئة — ${remaining} محاولة متبقية`;
+    }
+  }
+}
+
+function updateDots(){
+  for(let i=1; i<=MAX_ATTEMPTS; i++){
+    const dot = document.getElementById('dot-'+i);
+    if(dot) dot.classList.toggle('used', i <= pwAttempts);
+  }
+}
+
+function togglePwVisibility(){
+  const inp = document.getElementById('pw-input');
+  const eye = document.getElementById('pw-eye');
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    eye.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    eye.textContent = '👁';
+  }
+}
+
+function doShowDashboard(){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-dashboard').classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  if(pendingNavBtn) pendingNavBtn.classList.add('active');
+  renderDash();
+}
+
+// إغلاق بالضغط خارج النافذة
+document.getElementById('pw-overlay').addEventListener('click', e=>{
+  if(e.target === document.getElementById('pw-overlay')){
+    document.getElementById('pw-overlay').classList.remove('open');
+  }
 });
 
 // ════════════════════════════════════
