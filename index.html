@@ -349,6 +349,261 @@ nav{
 .confirm-box p{font-size:14px;color:var(--text);margin-bottom:20px;line-height:1.6;}
 .confirm-box .confirm-btns{display:flex;gap:10px;justify-content:center;}
 
+/* ─── CARD POSTER ─── */
+.card-poster{
+  width:100%;height:185px;overflow:hidden;position:relative;
+  background:var(--surf2);
+}
+.card-poster img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .4s ease;display:block;
+}
+.card:hover .card-poster img{transform:scale(1.04);}
+.card-poster-fallback{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:16px;text-align:center;
+}
+.poster-icon{font-size:36px;opacity:.6;}
+.poster-title-fallback{
+  font-size:13px;font-weight:800;color:rgba(255,255,255,.5);
+  line-height:1.3;max-width:90%;
+}
+.card-poster-fallback.end  {background:linear-gradient(145deg,#1a0505,#3d0a0a);}
+.card-poster-fallback.spy  {background:linear-gradient(145deg,#0d0520,#2d1060);}
+.card-poster-fallback.sci  {background:linear-gradient(145deg,#020b1a,#0a2540);}
+.card-poster-fallback.banned{background:linear-gradient(145deg,#1a0e00,#3d2000);}
+.card-poster-fallback.low  {background:linear-gradient(145deg,#001a0e,#003d1a);}
+.poster-loading{
+  position:absolute;inset:0;
+  background:var(--surf2);
+  display:flex;align-items:center;justify-content:center;
+}
+.poster-loading::after{
+  content:'';width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--border);border-top-color:var(--accent);
+  animation:spin .8s linear infinite;
+}
+
+/* ─── DISCOVERY MODAL ─── */
+.disc-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);
+  z-index:500;display:none;
+  align-items:stretch;justify-content:center;
+  padding:0;
+}
+.disc-overlay.open{display:flex;}
+.disc-modal{
+  background:var(--bg2);
+  width:100%;max-width:1100px;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  animation:fadeU .3s ease;
+  margin:20px;border-radius:20px;border:1px solid var(--border);
+  max-height:94vh;
+}
+.disc-head{
+  padding:18px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+  background:var(--bg3);
+}
+.disc-head h3{font-size:17px;font-weight:900;color:#fff;}
+.disc-head-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.disc-body{
+  display:flex;flex:1;overflow:hidden;
+  min-height:0;
+}
+
+/* FILTERS PANEL */
+.disc-filters{
+  width:260px;flex-shrink:0;
+  padding:20px;border-left:1px solid var(--border);
+  overflow-y:auto;background:var(--bg3);
+}
+.disc-filters h4{
+  font-size:11px;font-weight:800;letter-spacing:2px;
+  color:var(--text3);text-transform:uppercase;
+  margin-bottom:10px;margin-top:18px;
+}
+.disc-filters h4:first-child{margin-top:0;}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
+.chip{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  border:1px solid var(--border);background:var(--surf);
+  color:var(--text2);cursor:pointer;transition:all .18s;font-family:inherit;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.sel{background:var(--accent);color:#000;border-color:var(--accent);}
+.chip.sel.spy{background:var(--violet);color:#fff;border-color:var(--violet);}
+.chip.sel.end{background:var(--red);color:#fff;border-color:var(--red);}
+.chip.sel.sci{background:#3b82f6;color:#fff;border-color:#3b82f6;}
+.chip-count{
+  font-size:10px;background:rgba(255,255,255,.08);
+  padding:1px 5px;border-radius:4px;margin-right:3px;
+}
+.disc-run-btn{
+  width:100%;padding:12px;border-radius:11px;margin-top:20px;
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  color:#fff;font-family:inherit;font-size:14px;font-weight:800;
+  border:none;cursor:pointer;transition:opacity .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.disc-run-btn:hover{opacity:.88;}
+.disc-run-btn:disabled{opacity:.5;cursor:not-allowed;}
+.disc-spinner{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+  animation:spin .7s linear infinite;display:none;
+}
+.disc-run-btn.loading .disc-spinner{display:block;}
+.disc-run-btn.loading .disc-run-icon{display:none;}
+
+/* RESULTS PANEL */
+.disc-results{
+  flex:1;overflow-y:auto;padding:20px;
+  display:flex;flex-direction:column;gap:12px;
+  min-width:0;
+}
+.disc-empty{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  color:var(--text3);text-align:center;gap:12px;padding:40px;
+}
+.disc-empty-icon{font-size:48px;opacity:.4;}
+.disc-empty p{font-size:14px;}
+.disc-empty small{font-size:12px;color:var(--text3);opacity:.7;}
+
+.disc-result-card{
+  background:var(--surf);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  display:flex;gap:0;
+  transition:border-color .2s,transform .2s;
+  position:relative;
+}
+.disc-result-card:hover{border-color:rgba(0,212,255,.25);transform:translateX(-2px);}
+.disc-result-card.added{
+  border-color:var(--green);opacity:.6;pointer-events:none;
+}
+.disc-poster{
+  width:100px;flex-shrink:0;
+  background:var(--surf2);overflow:hidden;position:relative;
+}
+.disc-poster img{width:100%;height:100%;object-fit:cover;display:block;}
+.disc-poster-fb{
+  width:100%;height:100%;min-height:140px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+}
+.disc-poster-fb.end  {background:linear-gradient(180deg,#1a0505,#3d0a0a);}
+.disc-poster-fb.spy  {background:linear-gradient(180deg,#0d0520,#2d1060);}
+.disc-poster-fb.sci  {background:linear-gradient(180deg,#020b1a,#0a2540);}
+.disc-poster-fb.banned{background:linear-gradient(180deg,#1a0e00,#3d2000);}
+.disc-poster-fb.low  {background:linear-gradient(180deg,#001a0e,#003d1a);}
+
+.disc-info{flex:1;padding:14px 16px;min-width:0;}
+.disc-info-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.disc-title{font-size:15px;font-weight:800;color:#fff;line-height:1.3;}
+.disc-year{font-size:11px;color:var(--text3);margin-top:2px;}
+.disc-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.disc-desc{font-size:12px;color:var(--text2);line-height:1.65;margin-top:8px;}
+.disc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.disc-actions{display:flex;gap:8px;margin-top:12px;align-items:center;}
+.btn-add-disc{
+  padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;
+  background:var(--green);color:#000;border:none;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+  display:flex;align-items:center;gap:5px;
+}
+.btn-add-disc:hover{background:#0ea572;}
+.btn-skip-disc{
+  padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;
+  background:rgba(239,68,68,.1);color:var(--red);
+  border:1px solid rgba(239,68,68,.2);cursor:pointer;
+  font-family:inherit;transition:all .2s;
+}
+.btn-skip-disc:hover{background:rgba(239,68,68,.2);}
+.added-tag{
+  font-size:11px;color:var(--green);font-weight:700;
+  display:flex;align-items:center;gap:4px;
+}
+.disc-bar{
+  display:flex;align-items:center;gap:8px;margin-top:10px;
+}
+.disc-bar-bg{flex:1;height:3px;background:var(--surf2);border-radius:2px;overflow:hidden;}
+.disc-bar-fill{height:100%;border-radius:2px;background:linear-gradient(to left,var(--violet),var(--accent));}
+.disc-bar-num{font-size:10px;color:var(--text3);white-space:nowrap;}
+
+.disc-results-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:4px;flex-shrink:0;
+}
+.disc-results-header h4{font-size:13px;font-weight:700;color:var(--text2);}
+.disc-add-all{
+  padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;
+  background:rgba(16,185,129,.12);color:var(--green);
+  border:1px solid rgba(16,185,129,.25);cursor:pointer;font-family:inherit;
+  transition:all .2s;
+}
+.disc-add-all:hover{background:rgba(16,185,129,.22);}
+
+@media(max-width:640px){
+  .disc-modal{margin:0;border-radius:0;max-height:100vh;}
+  .disc-body{flex-direction:column;}
+  .disc-filters{width:100%;border-left:none;border-bottom:1px solid var(--border);}
+  .disc-poster{width:80px;}
+}
+
+/* ─── AI CLASSIFY ─── */
+.ai-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(124,58,237,.06));
+  border:1px solid rgba(0,212,255,.18);
+  border-radius:12px;padding:12px 16px;margin-bottom:18px;gap:12px;
+}
+.ai-bar-text{flex:1;}
+.ai-bar-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:2px;}
+.ai-bar-sub{font-size:11px;color:var(--text2);}
+.btn-ai{
+  padding:9px 18px;border-radius:9px;font-size:12px;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  color:#fff;border:none;cursor:pointer;font-family:inherit;
+  transition:opacity .2s,transform .1s;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.btn-ai:hover{opacity:.88;}
+.btn-ai:active{transform:scale(.97);}
+.btn-ai:disabled{opacity:.5;cursor:not-allowed;}
+.ai-spinner{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  animation:spin .7s linear infinite;display:none;
+}
+.btn-ai.loading .ai-spinner{display:block;}
+.btn-ai.loading .ai-icon{display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.ai-result-box{
+  background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.15);
+  border-radius:10px;padding:12px 14px;margin-bottom:14px;
+  font-size:12px;color:var(--text2);line-height:1.7;
+  display:none;
+}
+.ai-result-box.show{display:block;}
+.ai-result-box strong{color:var(--accent);}
+
+.api-key-field{
+  background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);
+  border-radius:10px;padding:12px 14px;margin-bottom:14px;
+}
+.api-key-field label{color:var(--amber)!important;}
+.api-key-field input{border-color:rgba(245,158,11,.3)!important;}
+.api-key-field input:focus{border-color:var(--amber)!important;box-shadow:0 0 0 3px rgba(245,158,11,.1)!important;}
+.api-key-hint{font-size:10px;color:var(--text3);margin-top:5px;}
+.api-key-hint a{color:var(--amber);text-decoration:none;}
+.api-key-hint a:hover{text-decoration:underline;}
+
 /* ─── PASSWORD MODAL ─── */
 .pw-modal{
   background:var(--bg3);border:1px solid var(--border);border-radius:20px;
@@ -570,6 +825,7 @@ nav{
       <h2>⚙️ لوحة التحكم</h2>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-ghost" onclick="openExport()">🚀 تصدير لـ GitHub</button>
+        <button class="btn btn-ghost" style="color:var(--violet);border-color:rgba(124,58,237,.35);" onclick="openDiscovery()">🔍 اكتشف بالذكاء الاصطناعي</button>
         <button class="btn btn-primary" onclick="openModal()">＋ إضافة مسلسل جديد</button>
       </div>
     </div>
@@ -610,6 +866,22 @@ nav{
     </div>
     <div class="modal-body">
       <input type="hidden" id="f-id">
+
+      <!-- AI CLASSIFY BAR -->
+      <div class="ai-bar">
+        <div class="ai-bar-text">
+          <div class="ai-bar-title">🤖 التصنيف بالذكاء الاصطناعي</div>
+          <div class="ai-bar-sub">اكتب اسم المسلسل والوصف ← اضغط للتصنيف التلقائي</div>
+        </div>
+        <button class="btn-ai" id="ai-btn" onclick="classifyWithAI()" type="button">
+          <span class="ai-icon">✨ صنّف</span>
+          <div class="ai-spinner"></div>
+        </button>
+      </div>
+
+      <!-- AI RESULT -->
+      <div class="ai-result-box" id="ai-result"></div>
+
       <div class="field-row">
         <div class="field">
           <label>اسم المسلسل *</label>
@@ -669,6 +941,11 @@ nav{
         <label>الأجواء (مقارنة أو وصف سريع)</label>
         <input type="text" id="f-vibes" placeholder="مثال: Dark لكن في الفضاء">
       </div>
+      <div class="field">
+        <label>🖼️ رابط الصورة (بوستر) — اختياري</label>
+        <input type="text" id="f-poster" placeholder="سيتم جلبها تلقائياً إذا تُركت فارغة">
+        <div class="field-hint">يُجلب تلقائياً من TVMaze — أو أدخل رابطاً مخصصاً</div>
+      </div>
       <div class="field-row">
         <div class="field">
           <label>التقييم (0–100)</label>
@@ -716,6 +993,106 @@ nav{
     <div class="confirm-btns">
       <button class="btn btn-ghost" onclick="closeConfirm()">إلغاء</button>
       <button class="btn btn-danger" id="confirm-ok">حذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DISCOVERY MODAL ══════ -->
+<div class="disc-overlay" id="disc-overlay">
+  <div class="disc-modal">
+
+    <div class="disc-head">
+      <div>
+        <h3>🔍 اكتشف بالذكاء الاصطناعي</h3>
+        <div class="disc-head-sub">حدد تفضيلاتك وسيقترح الذكاء الاصطناعي أفضل المسلسلات والأفلام</div>
+      </div>
+      <button class="modal-close" onclick="closeDiscovery()">✕</button>
+    </div>
+
+    <div class="disc-body">
+
+      <!-- FILTERS -->
+      <div class="disc-filters">
+
+        <h4>📂 النوع</h4>
+        <div class="filter-chips" id="fc-type">
+          <button class="chip sel" data-g="type" data-v="مسلسل">مسلسل</button>
+          <button class="chip sel" data-g="type" data-v="فيلم">فيلم</button>
+        </div>
+
+        <h4>🎭 الموضوع</h4>
+        <div class="filter-chips" id="fc-topic">
+          <button class="chip sel end" data-g="topic" data-v="نهاية العالم">☣️ نهاية العالم</button>
+          <button class="chip sel spy" data-g="topic" data-v="تجسس واستخبارات">🕵️ تجسس</button>
+          <button class="chip sel sci" data-g="topic" data-v="خيال علمي">🛰️ خيال علمي</button>
+          <button class="chip" data-g="topic" data-v="مؤامرة سياسية">🏛️ مؤامرة سياسية</button>
+          <button class="chip" data-g="topic" data-v="ذكاء اصطناعي">🤖 ذكاء اصطناعي</button>
+          <button class="chip" data-g="topic" data-v="بقاء وكوارث">🌪️ بقاء وكوارث</button>
+          <button class="chip" data-g="topic" data-v="جريمة ومحققون">🔎 جريمة</button>
+          <button class="chip" data-g="topic" data-v="تاريخ بديل">🔄 تاريخ بديل</button>
+        </div>
+
+        <h4>📅 الحقبة الزمنية</h4>
+        <div class="filter-chips" id="fc-era">
+          <button class="chip" data-g="era" data-v="قبل 2000">قبل 2000</button>
+          <button class="chip" data-g="era" data-v="2000–2010">2000–2010</button>
+          <button class="chip sel" data-g="era" data-v="2010–2020">2010–2020</button>
+          <button class="chip sel" data-g="era" data-v="2020 وما بعد">2020+</button>
+        </div>
+
+        <h4>⏱️ الطول</h4>
+        <div class="filter-chips" id="fc-length">
+          <button class="chip" data-g="length" data-v="قصير (موسم أو اثنان)">قصير</button>
+          <button class="chip sel" data-g="length" data-v="متوسط (3–4 مواسم)">متوسط</button>
+          <button class="chip sel" data-g="length" data-v="طويل (5+ مواسم)">طويل</button>
+        </div>
+
+        <h4>🎨 الأجواء</h4>
+        <div class="filter-chips" id="fc-mood">
+          <button class="chip sel" data-g="mood" data-v="مظلم وثقيل">مظلم</button>
+          <button class="chip sel" data-g="mood" data-v="مثير ومشوق">مثير</button>
+          <button class="chip" data-g="mood" data-v="فلسفي وعميق">فلسفي</button>
+          <button class="chip" data-g="mood" data-v="أكشن وحركة">أكشن</button>
+          <button class="chip" data-g="mood" data-v="نفسي ومعقد">نفسي</button>
+        </div>
+
+        <h4>⭐ الشهرة</h4>
+        <div class="filter-chips" id="fc-fame">
+          <button class="chip sel" data-g="fame" data-v="مشهور">مشهور</button>
+          <button class="chip sel" data-g="fame" data-v="hidden gem نادر المشاهدة">كنوز مخفية</button>
+        </div>
+
+        <h4>🌍 اللغة الأصلية</h4>
+        <div class="filter-chips" id="fc-lang">
+          <button class="chip sel" data-g="lang" data-v="إنجليزي">إنجليزي</button>
+          <button class="chip" data-g="lang" data-v="كوري">كوري</button>
+          <button class="chip" data-g="lang" data-v="إسباني">إسباني</button>
+          <button class="chip" data-g="lang" data-v="ألماني">ألماني</button>
+          <button class="chip" data-g="lang" data-v="ياباني">ياباني</button>
+        </div>
+
+        <h4>✍️ أخبرني أكثر (اختياري)</h4>
+        <textarea id="disc-freetext"
+          placeholder="مثلاً: أريد شيئاً مثل Dark لكن أقصر، أو مسلسل كوري مع ذكاء اصطناعي..."
+          style="width:100%;background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:10px;color:var(--text);font-family:inherit;font-size:12px;direction:rtl;outline:none;resize:vertical;min-height:70px;line-height:1.6;transition:border-color .2s;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+
+        <button class="disc-run-btn" id="disc-run-btn" onclick="runDiscovery(false)">
+          <span class="disc-run-icon">✨ ابحث الآن</span>
+          <div class="disc-spinner"></div>
+        </button>
+
+      </div>
+
+      <!-- RESULTS -->
+      <div class="disc-results" id="disc-results">
+        <div class="disc-empty">
+          <div class="disc-empty-icon">🎬</div>
+          <p>حدد تفضيلاتك واضغط "ابحث الآن"</p>
+          <small>سيقترح الذكاء الاصطناعي 6 عناوين مناسبة لك</small>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1045,8 +1422,16 @@ function buildCard(s, i){
   if(s.badge_extra==='banned') extraBdg=`<span class="bdg banned">🛑 تعرّض لرقابة</span>`;
   if(s.badge_extra==='low')    extraBdg=`<span class="bdg low">📉 نادر</span>`;
 
+  const typeClass = s.type||s.filter||'sci';
+  const typeIcons = {end:'☣️',spy:'🕵️',sci:'🛰️',banned:'🛑',low:'📉'};
+
+  const posterHtml = s.poster
+    ? `<div class="card-poster"><div class="poster-loading"></div><img src="${s.poster}" alt="${s.title}" loading="lazy" onload="this.parentElement.querySelector('.poster-loading').style.display='none'" onerror="this.style.display='none';this.parentElement.querySelector('.poster-loading').style.display='none'"></div>`
+    : `<div class="card-poster"><div class="card-poster-fallback ${typeClass}"><div class="poster-icon">${typeIcons[typeClass]||'🎬'}</div><div class="poster-title-fallback">${s.title}</div></div></div>`;
+
   card.innerHTML=`
-    <div class="card-bar ${s.type||s.filter}"></div>
+    ${posterHtml}
+    <div class="card-bar ${typeClass}"></div>
     <div class="card-body">
       <div class="card-title">${s.title}</div>
       <div class="card-year">${s.year||''}</div>
@@ -1143,6 +1528,9 @@ function renderDash(){
 function openModal(id){
   editId = id||null;
   document.getElementById('modal-title').textContent = id ? 'تعديل المسلسل':'إضافة مسلسل جديد';
+  // clear AI result
+  const aiRes = document.getElementById('ai-result');
+  if(aiRes) aiRes.classList.remove('show');
   if(id){
     const s = shows.find(x=>x.id===id);
     if(!s) return;
@@ -1161,8 +1549,12 @@ function openModal(id){
     document.getElementById('f-viewers').value = s.viewers||'';
     document.getElementById('f-demo').value    = s.demo||'';
     document.getElementById('f-reason').value  = s.reason||'';
+    document.getElementById('f-poster').value  = s.poster||'';
   } else {
-    ['f-id','f-title','f-year','f-seasons','f-desc','f-tags','f-vibes','f-viewers','f-demo','f-reason'].forEach(id=>document.getElementById(id).value='');
+    ['f-id','f-title','f-year','f-seasons','f-desc','f-tags','f-vibes',
+     'f-viewers','f-demo','f-reason','f-poster'].forEach(fid=>{
+      const el=document.getElementById(fid); if(el) el.value='';
+    });
     document.getElementById('f-status').value='complete';
     document.getElementById('f-filter').value='end';
     document.getElementById('f-type').value='end';
@@ -1201,7 +1593,20 @@ function saveShow(){
     viewers:     document.getElementById('f-viewers').value.trim(),
     demo:        document.getElementById('f-demo').value.trim(),
     reason:      document.getElementById('f-reason').value.trim(),
+    poster:      document.getElementById('f-poster').value.trim(),
   };
+
+  // auto-fetch poster if not provided
+  if(!obj.poster){
+    toast('🖼️ جارٍ جلب الصورة...');
+    fetchPoster(title).then(url=>{
+      if(url){
+        obj.poster = url;
+        const idx = shows.findIndex(s=>s.id===obj.id);
+        if(idx>-1){ shows[idx].poster=url; save(); renderPublic(); renderDash(); }
+      }
+    });
+  }
 
   if(editId){
     const idx = shows.findIndex(s=>s.id===editId);
@@ -1286,9 +1691,412 @@ document.getElementById('confirm-overlay').addEventListener('click',e=>{
 });
 
 // ════════════════════════════════════
+// POSTER FETCH (TVMaze — free, no key)
+// ════════════════════════════════════
+async function fetchPoster(title){
+  try{
+    const q = encodeURIComponent(title.replace(/\(.*?\)/g,'').trim());
+    const r = await fetch(`https://api.tvmaze.com/singlesearch/shows?q=${q}`);
+    if(!r.ok) return null;
+    const d = await r.json();
+    return d?.image?.original || d?.image?.medium || null;
+  }catch(e){ return null; }
+}
+
+// ════════════════════════════════════
+// DISCOVERY MODAL
+// ════════════════════════════════════
+const discSelections = {};
+
+let discChipsInited = false;
+function openDiscovery(){
+  if(!discChipsInited){
+    discChipsInited = true;
+    document.querySelectorAll('.disc-filters .chip').forEach(c=>{
+      const g=c.dataset.g, v=c.dataset.v;
+      if(!discSelections[g]) discSelections[g]=new Set();
+      if(c.classList.contains('sel')) discSelections[g].add(v);
+      c.addEventListener('click',()=>{
+        c.classList.toggle('sel');
+        if(c.classList.contains('sel')) discSelections[g].add(v);
+        else discSelections[g].delete(v);
+      });
+    });
+  }
+  document.getElementById('disc-overlay').classList.add('open');
+}
+function closeDiscovery(){
+  document.getElementById('disc-overlay').classList.remove('open');
+}
+document.getElementById('disc-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('disc-overlay')) closeDiscovery();
+});
+
+async function runDiscovery(append){
+  const btn = document.getElementById('disc-run-btn');
+  const resultsEl = document.getElementById('disc-results');
+
+  const get = g => [...(discSelections[g]||[])].join('، ') || 'أي';
+  const freeText = (document.getElementById('disc-freetext')||{}).value||'';
+  const alreadyHave = shows.map(s=>s.title.toLowerCase());
+  // also exclude previously shown results
+  const prevShown = (window._discResults||[]).map(r=>r.title.toLowerCase());
+  const exclude = [...alreadyHave, ...prevShown];
+
+  if(!AI_KEY || AI_KEY==='PUT_YOUR_KEY_HERE'){
+    toast('⚠️ AI Key غير مضبوط'); return;
+  }
+
+  btn.classList.add('loading'); btn.disabled=true;
+
+  if(!append){
+    window._discResults = [];
+    resultsEl.innerHTML=`<div class="disc-empty"><div class="disc-empty-icon" style="animation:spin 1s linear infinite">⚙️</div><p>الذكاء الاصطناعي يبحث...</p></div>`;
+  } else {
+    // remove "more" button if exists
+    const moreBtn = document.getElementById('disc-more-btn');
+    if(moreBtn) moreBtn.remove();
+    // add loading row
+    const loadRow = document.createElement('div');
+    loadRow.id='disc-load-more-row';
+    loadRow.className='disc-empty';
+    loadRow.style='padding:20px';
+    loadRow.innerHTML='<div class="disc-empty-icon" style="animation:spin 1s linear infinite;font-size:28px">⚙️</div><p style="font-size:12px">جارٍ البحث عن نتائج إضافية...</p>';
+    resultsEl.appendChild(loadRow);
+  }
+
+  // build clean prompt — no ambiguous quotes inside JSON template
+  const promptLines = [
+    'أنت خبير عالمي في المسلسلات والأفلام. أرجع مصفوفة JSON صالحة فقط بدون أي نص قبلها أو بعدها.',
+    '',
+    'التفضيلات:',
+    'النوع: ' + get('type'),
+    'الموضوع: ' + get('topic'),
+    'الحقبة: ' + get('era'),
+    'الطول: ' + get('length'),
+    'الأجواء: ' + get('mood'),
+    'الشهرة: ' + get('fame'),
+    'اللغة: ' + get('lang'),
+    freeText ? 'ملاحظات إضافية: ' + freeText : '',
+    '',
+    'لا تقترح هذه العناوين (موجودة مسبقاً): ' + exclude.slice(0,40).join(', '),
+    '',
+    'اقترح 6 عناوين جديدة متنوعة. كل عنصر في المصفوفة يجب أن يكون بهذا الشكل بالضبط:',
+    '{"title":"X","title_ar":"Y","year":"2020","type":"مسلسل","seasons":"3 مواسم","status":"complete","filter":"sci","badge_extra":"","desc":"وصف عربي مشوق","tags":["t1","t2","t3"],"vibes":"تشبيه","bar":85,"why":"سبب"}',
+    '',
+    'قيم filter: end أو spy أو sci أو banned أو low',
+    'قيم status: complete أو ongoing أو cancelled',
+    'قيم badge_extra: سلسلة فارغة أو banned أو low',
+    'bar: رقم صحيح من 0 إلى 100 فقط',
+    'تأكد أن JSON صالح تماماً بدون أخطاء نحوية.'
+  ];
+  const prompt = promptLines.filter(l=>l!==null).join('\n');
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': AI_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:2500,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!res.ok){
+      const e=await res.json().catch(()=>({}));
+      throw new Error(e?.error?.message||'خطأ '+res.status);
+    }
+    const data = await res.json();
+    const raw  = (data.content?.[0]?.text||'').trim();
+
+    // robust JSON extraction
+    let results;
+    try{
+      const m = raw.match(/\[[\s\S]*\]/);
+      if(!m) throw new Error('no array found');
+      results = JSON.parse(m[0]);
+    } catch(parseErr){
+      // try to fix common issues: trailing commas, unquoted values
+      const cleaned = raw
+        .replace(/,\s*([}\]])/g,'$1')  // trailing commas
+        .replace(/:\s*""\s*\|[^"}\],]*/g, ': ""'); // pipe-separated values
+      const m2 = cleaned.match(/\[[\s\S]*\]/);
+      if(!m2) throw new Error('تعذّر قراءة النتائج — حاول مرة أخرى');
+      results = JSON.parse(m2[0]);
+    }
+
+    if(!Array.isArray(results)||!results.length) throw new Error('لم يتم الحصول على نتائج');
+
+    // remove loading row
+    const loadRow = document.getElementById('disc-load-more-row');
+    if(loadRow) loadRow.remove();
+
+    if(!append){
+      window._discResults = results;
+      renderDiscoveryResults(results, false);
+    } else {
+      const offset = window._discResults.length;
+      window._discResults = [...window._discResults, ...results];
+      renderDiscoveryResults(results, true, offset);
+    }
+
+  }catch(e){
+    const loadRow = document.getElementById('disc-load-more-row');
+    if(loadRow) loadRow.remove();
+    if(!append){
+      resultsEl.innerHTML=`<div class="disc-empty"><div class="disc-empty-icon">❌</div><p>حدث خطأ: ${e.message}</p><small>حاول مرة أخرى أو غيّر الفلاتر</small></div>`;
+    } else {
+      toast('❌ '+e.message);
+    }
+  }finally{
+    btn.classList.remove('loading'); btn.disabled=false;
+  }
+}
+
+function renderDiscoveryResults(results, append, offset){
+  const el = document.getElementById('disc-results');
+  const typeIcons={end:'☣️',spy:'🕵️',sci:'🛰️',banned:'🛑',low:'📉'};
+  const filterLabels={end:'نهاية العالم',spy:'تجسس',sci:'خيال علمي',banned:'ممنوع',low:'نادر'};
+  offset = offset||0;
+
+  if(!append){
+    el.innerHTML=`
+      <div class="disc-results-header">
+        <h4 id="disc-count-label">🎬 ${results.length} نتيجة — اختر ما تريد إضافته</h4>
+        <button class="disc-add-all" onclick="addAllDiscovered()">إضافة الكل ✅</button>
+      </div>`;
+  } else {
+    // update count label
+    const lbl = document.getElementById('disc-count-label');
+    if(lbl) lbl.textContent = `🎬 ${window._discResults.length} نتيجة — اختر ما تريد إضافته`;
+  }
+
+  results.forEach((r,i)=>{
+    const idx = offset + i;
+    const typeClass = r.filter||'sci';
+    const card = document.createElement('div');
+    card.className='disc-result-card';
+    card.id=`drc-${idx}`;
+
+    const statusLabel = {complete:'مكتمل',ongoing:'مستمر',cancelled:'مُلغى'}[r.status]||'';
+    card.innerHTML=`
+      <div class="disc-poster">
+        <div class="disc-poster-fb ${typeClass}" id="dpf-${idx}">${typeIcons[typeClass]||'🎬'}</div>
+      </div>
+      <div class="disc-info">
+        <div class="disc-info-top">
+          <div>
+            <div class="disc-title">${r.title||''}${r.title_ar&&r.title_ar!==r.title?` <span style="font-size:12px;color:var(--text2);font-weight:400">(${r.title_ar})</span>`:''}</div>
+            <div class="disc-year">${r.year||''} · ${r.type||''} · ${r.seasons||''}</div>
+          </div>
+          <span class="bdg ${r.status||''}">${statusLabel}</span>
+        </div>
+        <div class="disc-meta">
+          <span class="bdg">${typeIcons[typeClass]} ${filterLabels[typeClass]||typeClass}</span>
+          ${r.badge_extra==='banned'?'<span class="bdg banned">🛑 رقابة</span>':''}
+          ${r.badge_extra==='low'?'<span class="bdg low">📉 نادر</span>':''}
+        </div>
+        <div class="disc-desc">${r.desc||''}</div>
+        <div class="disc-tags">${(r.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        <div class="disc-bar">
+          <span class="disc-bar-num">التقييم</span>
+          <div class="disc-bar-bg"><div class="disc-bar-fill" style="width:${r.bar||75}%"></div></div>
+          <span class="disc-bar-num">${r.bar||75}%</span>
+        </div>
+        ${r.why?`<div style="font-size:11px;color:#a78bfa;margin-top:8px;font-style:italic">💡 ${r.why}</div>`:''}
+        <div class="disc-actions" id="da-${idx}">
+          <button class="btn-add-disc" onclick="addDiscovered(${idx})">✅ إضافة للموقع</button>
+          <button class="btn-skip-disc" onclick="skipDiscovered(${idx})">تخطي</button>
+        </div>
+      </div>`;
+
+    el.appendChild(card);
+
+    // fetch poster async
+    fetchPoster(r.title).then(url=>{
+      if(!url) return;
+      const pfb = document.getElementById(`dpf-${idx}`);
+      if(pfb){
+        pfb.innerHTML=`<img src="${url}" alt="${r.title||''}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onerror="this.style.display='none'">`;
+        pfb.className='disc-poster';
+      }
+      if(window._discResults?.[idx]) window._discResults[idx]._poster=url;
+    });
+  });
+
+  // add "more" button at the end
+  const oldMore = document.getElementById('disc-more-btn');
+  if(oldMore) oldMore.remove();
+  const moreWrap = document.createElement('div');
+  moreWrap.style='display:flex;justify-content:center;padding:12px 0 4px;';
+  moreWrap.innerHTML=`<button id="disc-more-btn" class="btn btn-ghost" style="gap:6px;font-size:13px;" onclick="runDiscovery(true)">🔄 نتائج أخرى</button>`;
+  el.appendChild(moreWrap);
+}
+
+async function addDiscovered(i){
+  const r = window._discResults?.[i];
+  if(!r) return;
+  const tags = typeof r.tags==='string'
+    ? r.tags.split(/[,،]/).map(t=>t.trim()).filter(Boolean)
+    : (r.tags||[]);
+
+  const obj = {
+    id: nextId(),
+    title: r.title,
+    year: r.year||'',
+    seasons: r.seasons||'',
+    status: r.status||'complete',
+    filter: r.filter||'sci',
+    type: r.filter||'sci',
+    desc: r.desc||'',
+    tags,
+    vibes: r.vibes||'',
+    bar: r.bar||75,
+    badge_extra: r.badge_extra||'',
+    poster: r._poster||'',
+  };
+
+  shows.push(obj);
+  save();
+  renderDash();
+
+  // mark as added
+  const card = document.getElementById(`drc-${i}`);
+  if(card){
+    card.classList.add('added');
+    const da = document.getElementById(`da-${i}`);
+    if(da) da.innerHTML=`<span class="added-tag">✅ تمت الإضافة</span>`;
+  }
+  toast(`✅ تمت إضافة "${r.title}"`);
+}
+
+function skipDiscovered(i){
+  const card = document.getElementById(`drc-${i}`);
+  if(card) card.style.opacity='0.35';
+  const da = document.getElementById(`da-${i}`);
+  if(da) da.innerHTML=`<span style="font-size:11px;color:var(--text3)">تم التخطي</span>`;
+}
+
+async function addAllDiscovered(){
+  const results = window._discResults||[];
+  for(let i=0;i<results.length;i++){
+    const card=document.getElementById(`drc-${i}`);
+    if(!card?.classList.contains('added')) await addDiscovered(i);
+  }
+  toast('✅ تمت إضافة جميع النتائج!');
+}
+
+// ════════════════════════════════════
+// AI CLASSIFICATION
+// ════════════════════════════════════
+const AI_KEY = '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';
+
+async function classifyWithAI(){
+  const title = document.getElementById('f-title').value.trim();
+  const desc  = document.getElementById('f-desc').value.trim();
+
+  if(!title && !desc){ toast('⚠️ اكتب اسم المسلسل أو وصفًا أولاً'); return; }
+  if(!AI_KEY || AI_KEY === 'PUT_YOUR_KEY_HERE'){
+    toast('⚠️ ضع API Key في الكود أولاً');
+    return;
+  }
+
+  const btn = document.getElementById('ai-btn');
+  const resultBox = document.getElementById('ai-result');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  resultBox.classList.remove('show');
+
+  const prompt = `أنت خبير في تصنيف المسلسلات الأجنبية. أرجع JSON فقط بدون أي نص.
+
+اسم المسلسل: ${title || 'غير محدد'}
+الوصف: ${desc || 'غير محدد'}
+
+الشكل المطلوب بالضبط:
+{"filter":"sci","type":"sci","tags":["كلمة1","كلمة2","كلمة3"],"vibes":"وصف الأجواء","bar":80,"badge_extra":"","desc_ar":"وصف عربي","reasoning":"السبب"}
+
+قيم filter و type: end أو spy أو sci أو banned أو low
+قيم badge_extra: سلسلة فارغة أو banned أو low
+bar: رقم من 0 إلى 100
+
+end=نهاية العالم/كوارث/فيروسات، spy=تجسس/CIA/استخبارات، sci=خيال علمي/فضاء/ذكاء اصطناعي، banned=رقابة/منع، low=نادر المشاهدة`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': AI_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 600,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err?.error?.message || `خطأ ${res.status}`);
+    }
+
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error('لم يتم الحصول على نتيجة صحيحة');
+
+    const result = JSON.parse(jsonMatch[0]);
+
+    if(result.filter)   document.getElementById('f-filter').value = result.filter;
+    if(result.type)     document.getElementById('f-type').value   = result.type;
+    if(result.bar)      document.getElementById('f-bar').value    = result.bar;
+    if(result.badge_extra !== undefined) document.getElementById('f-extra').value = result.badge_extra;
+    if(result.tags?.length) document.getElementById('f-tags').value = result.tags.join('، ');
+    if(result.vibes)    document.getElementById('f-vibes').value  = result.vibes;
+    if(result.desc_ar && !desc) document.getElementById('f-desc').value = result.desc_ar;
+
+    const filterLabels = {end:'☣️ نهاية العالم', spy:'🕵️ تجسس', sci:'🛰️ خيال علمي', banned:'🛑 ممنوع', low:'📉 نادر'};
+    resultBox.innerHTML = `
+      <strong>✅ تم التصنيف بنجاح!</strong><br>
+      📂 التصنيف: <strong>${filterLabels[result.filter]||result.filter}</strong> &nbsp;|&nbsp;
+      ⭐ التقييم: <strong>${result.bar}%</strong><br>
+      🏷️ التاقات: <strong>${(result.tags||[]).join(' • ')}</strong><br>
+      💬 الأجواء: <em>${result.vibes||''}</em><br>
+      🤖 السبب: ${result.reasoning||''}
+    `;
+    resultBox.classList.add('show');
+    toast('✅ تم التصنيف — راجع الحقول أدناه!');
+
+    // auto-fetch poster
+    if(!document.getElementById('f-poster').value){
+      fetchPoster(title).then(url=>{
+        if(url) document.getElementById('f-poster').value = url;
+      });
+    }
+
+  } catch(e) {
+    resultBox.innerHTML = `<strong style="color:var(--red)">❌ خطأ:</strong> ${e.message}`;
+    resultBox.classList.add('show');
+    toast('❌ ' + e.message);
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// إخفاء نتيجة AI عند فتح موديل جديد — مدمج في openModal الأصلي أعلاه
+
+// ════════════════════════════════════
 // PASSWORD PROTECTION
 // ════════════════════════════════════
-const DASHBOARD_PASSWORD = 'shows2025'; // ← غيّر كلمة المرور هنا
+const DASHBOARD_PASSWORD = '00000008';
 let pwAttempts = 0;
 const MAX_ATTEMPTS = 5;
 let pwUnlocked = false;
