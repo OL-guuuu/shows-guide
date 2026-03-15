@@ -1518,6 +1518,18 @@ function nextId(){
 }
 
 // ════════════════════════════════════
+// NULL-SAFE DOM HELPERS
+// ════════════════════════════════════
+function setEl(id, val){
+  const el = document.getElementById(id);
+  if(el) el.textContent = val;
+}
+function setHTML(id, val){
+  const el = document.getElementById(id);
+  if(el) el.innerHTML = val;
+}
+
+// ════════════════════════════════════
 // VIEWS
 // ════════════════════════════════════
 function showView(name){
@@ -1578,11 +1590,12 @@ function renderPublic(){
     main.appendChild(grid);
   });
 
-  document.getElementById('empty-state').classList.toggle('show', totalShown===0);
-  document.getElementById('stat-shown').textContent=totalShown;
-  document.getElementById('stat-total').textContent=shows.length;
-  document.getElementById('stat-complete').textContent=shows.filter(s=>s.status==='complete').length;
-  document.getElementById('stat-banned').textContent=shows.filter(s=>s.badge_extra==='banned').length;
+  const emptyEl = document.getElementById('empty-state');
+  if(emptyEl) emptyEl.classList.toggle('show', totalShown===0);
+  setEl('stat-shown',    totalShown);
+  setEl('stat-total',    shows.length);
+  setEl('stat-complete', shows.filter(s=>s.status==='complete').length);
+  setEl('stat-banned',   shows.filter(s=>s.badge_extra==='banned').length);
 
   renderStatsTable();
 }
@@ -1675,20 +1688,23 @@ function renderStatsTable(){
 // DASHBOARD RENDER
 // ════════════════════════════════════
 function renderDash(){
-  // show API key status
+  // these elements only exist when dashboard view is active
+  const dashEl = document.getElementById('view-dashboard');
+  if(!dashEl || !dashEl.classList.contains('active')) return;
+
   const saved = !!getAIKey();
   showAPIKeyStatus(saved);
-  // load Supabase config into UI
   loadSupabaseConfigUI();
   showDBStatus(dbConnected ? 'connected' : (hasSupabase() ? 'loading' : 'local'));
 
-  document.getElementById('d-total').textContent=shows.length;
-  document.getElementById('d-end').textContent=shows.filter(s=>s.filter==='end').length;
-  document.getElementById('d-spy').textContent=shows.filter(s=>s.filter==='spy').length;
-  document.getElementById('d-sci').textContent=shows.filter(s=>s.filter==='sci').length;
-  document.getElementById('d-banned').textContent=shows.filter(s=>s.badge_extra==='banned').length;
+  setEl('d-total',  shows.length);
+  setEl('d-end',    shows.filter(s=>s.filter==='end').length);
+  setEl('d-spy',    shows.filter(s=>s.filter==='spy').length);
+  setEl('d-sci',    shows.filter(s=>s.filter==='sci').length);
+  setEl('d-banned', shows.filter(s=>s.badge_extra==='banned').length);
 
   const tbody = document.getElementById('dash-tbody');
+  if(!tbody) return;
   tbody.innerHTML='';
   shows.forEach((s,i)=>{
     tbody.insertAdjacentHTML('beforeend',`
