@@ -1396,12 +1396,21 @@ async function dbLoad(){
       headers:{ 'apikey':getSupaKey(), 'Authorization':'Bearer '+getSupaKey() }
     });
     if(!r.ok) return null;
-    return await r.json();
-  }catch(e){ return null; }
+    const data = await r.json();
+    // ensure tags is always array
+    return data.map(s=>({
+      ...s,
+      tags: Array.isArray(s.tags) ? s.tags : (s.tags ? String(s.tags).split(',') : []),
+      desc: s.desc || '',
+      bar: parseInt(s.bar)||75,
+    }));
+  }catch(e){ console.error('dbLoad',e); return null; }
 }
 
 async function dbSave(obj){
   if(!hasSupabase()) return false;
+  // map 'desc' field — reserved word in SQL, stored as 'desc' column with quotes
+  const payload = {...obj};
   try{
     const r = await fetch(`${getSupaURL()}/rest/v1/shows`,{
       method:'POST',
@@ -1411,10 +1420,10 @@ async function dbSave(obj){
         'Content-Type':'application/json',
         'Prefer':'return=minimal'
       },
-      body: JSON.stringify(obj)
+      body: JSON.stringify(payload)
     });
     return r.ok;
-  }catch(e){ return false; }
+  }catch(e){ console.error('dbSave',e); return false; }
 }
 
 async function dbUpdate(id, obj){
@@ -1927,61 +1936,67 @@ function showAPIKeyStatus(saved){
 // SUPABASE CONFIG
 // ════════════════════════════════════
 async function saveSupabaseConfig(){
-  const url = document.getElementById('supa-url').value.trim();
-  const key = document.getElementById('supa-key').value.trim();
-  const statusEl = document.getElementById('supa-status');
+  const urlInput = document.getElementById('supa-url');
+  const keyInput = document.getElementById('supa-key');
+  if(!urlInput || !keyInput) return;
+
+  const url = urlInput.value.trim();
+  // if field shows dots, use stored key
+  const rawKey = keyInput.value.trim();
+  const key = (rawKey.includes('•') || rawKey === '') ? getSupaKey() : rawKey;
 
   if(!url || !key){
     toast('⚠️ أدخل URL و Key معاً');
     return;
   }
-  if(!url.includes('supabase.co')){
-    toast('⚠️ URL يجب أن يحتوي على supabase.co');
+  if(!url.includes('supabase')){
+    toast('⚠️ URL يجب أن يحتوي على supabase');
     return;
   }
 
-  statusEl.textContent = '⏳ جارٍ الاتصال...';
-  statusEl.style.color = 'var(--text2)';
+  // update status safely via helper
+  const setStatus = (msg, color) => {
+    const el = document.getElementById('supa-status');
+    if(el){ el.textContent = msg; el.style.color = color||'var(--text2)'; }
+  };
 
-  // test connection
+  setStatus('⏳ جارٍ الاتصال...', 'var(--text2)');
+
   try{
-    const r = await fetch(`${url}/rest/v1/shows?select=count&limit=1`,{
+    const r = await fetch(`${url}/rest/v1/shows?select=id&limit=1`,{
       headers:{ 'apikey':key, 'Authorization':'Bearer '+key }
     });
-    if(!r.ok) throw new Error('فشل الاتصال — تحقق من URL و Key');
+    if(!r.ok){
+      const errData = await r.json().catch(()=>({}));
+      throw new Error(errData?.message || 'فشل الاتصال — تحقق من URL و Key');
+    }
 
-    // save to localStorage
     localStorage.setItem(SUPA_URL_STORAGE, url);
     localStorage.setItem(SUPA_KEY_STORAGE, key);
 
-    statusEl.textContent = '✅ تم الاتصال بنجاح!';
-    statusEl.style.color = 'var(--green)';
+    setStatus('✅ تم الاتصال! جارٍ تحميل البيانات...', 'var(--green)');
     toast('✅ تم الاتصال بـ Supabase!');
 
-    // reload data from DB
-    showDBStatus('loading');
     const data = await dbLoad();
     if(data && Array.isArray(data)){
       dbConnected = true;
-      showDBStatus('connected');
       if(data.length === 0){
-        // first time: push existing shows to DB
-        statusEl.textContent = '⏳ جارٍ رفع البيانات الحالية...';
+        setStatus('⏳ قاعدة البيانات فارغة — جارٍ رفع المسلسلات...', 'var(--amber)');
         for(const s of shows){ await dbSave(s); }
-        statusEl.textContent = `✅ تم رفع ${shows.length} مسلسل إلى قاعدة البيانات!`;
-        toast('🎉 تم ربط قاعدة البيانات ورفع كل المسلسلات!');
+        setStatus(`🎉 تم رفع ${shows.length} مسلسل!`, 'var(--green)');
+        toast(`🎉 تم رفع ${shows.length} مسلسل إلى Supabase!`);
       } else {
         shows = data;
-        statusEl.textContent = `✅ تم تحميل ${data.length} مسلسل من قاعدة البيانات`;
+        setStatus(`✅ تم تحميل ${data.length} مسلسل`, 'var(--green)');
         toast(`✅ تم تحميل ${data.length} مسلسل من Supabase`);
       }
       renderPublic();
       renderDash();
     }
   } catch(e){
-    statusEl.textContent = '❌ ' + e.message;
-    statusEl.style.color = 'var(--red)';
+    setStatus('❌ ' + e.message, 'var(--red)');
     toast('❌ ' + e.message);
+    console.error('Supabase error:', e);
   }
 }
 
