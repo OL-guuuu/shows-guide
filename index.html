@@ -2146,7 +2146,7 @@ async function runDiscovery(append){
           maxOutputTokens:3000,
           responseMimeType:'application/json'
         },
-        thinkingConfig:{ thinkingBudget: 0 }
+
       })
     });
     if(!res.ok){
@@ -2154,16 +2154,17 @@ async function runDiscovery(append){
       throw new Error(e?.error?.message||'خطأ '+res.status);
     }
     const data = await res.json();
-    console.log('Gemini full response:', JSON.stringify(data).substring(0,500));
+    console.log('Gemini full response:', JSON.stringify(data).substring(0,600));
 
-    // extract text — handle both thinking and non-thinking responses
-    let raw = '';
+    // collect all text parts (skip thought parts)
     const parts = data.candidates?.[0]?.content?.parts || [];
-    for(const part of parts){
-      if(part.text && !part.thought){ raw = part.text.trim(); break; }
-    }
-    if(!raw) raw = (parts[parts.length-1]?.text||'').trim();
-    console.log('Gemini raw text:', raw.substring(0,300));
+    let raw = parts
+      .filter(p => p.text && !p.thought)
+      .map(p => p.text)
+      .join('').trim();
+    // fallback: just take last part
+    if(!raw) raw = (parts[parts.length-1]?.text || '').trim();
+    console.log('Gemini raw text:', raw.substring(0,400));
 
     // robust JSON extraction — multiple strategies
     let results;
@@ -2397,7 +2398,7 @@ end=نهاية العالم/كوارث/فيروسات، spy=تجسس/CIA/است�
           maxOutputTokens: 600,
           responseMimeType: 'application/json'
         },
-        thinkingConfig: { thinkingBudget: 0 }
+
       })
     });
 
@@ -2407,14 +2408,13 @@ end=نهاية العالم/كوارث/فيروسات، spy=تجسس/CIA/است�
     }
 
     const data = await res.json();
-    // extract text — handle thinking model parts
-    let raw = '';
     const parts = data.candidates?.[0]?.content?.parts || [];
-    for(const part of parts){
-      if(part.text && !part.thought){ raw = part.text.trim(); break; }
-    }
-    if(!raw) raw = (parts[parts.length-1]?.text||'').trim();
-    console.log('Gemini classify raw:', raw.substring(0,200));
+    let raw = parts
+      .filter(p => p.text && !p.thought)
+      .map(p => p.text)
+      .join('').trim();
+    if(!raw) raw = (parts[parts.length-1]?.text || '').trim();
+    console.log('Gemini classify raw:', raw.substring(0,300));
 
     // try multiple parse strategies
     let result = null;
