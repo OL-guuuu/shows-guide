@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المنصة — أفلام • كتب • بودكاست</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070a0f;--bg2:#0d1117;--surf:#161d2b;--surf2:#1e2a3a;
+  --border:#1f3050;--accent:#00d4ff;--violet:#7c3aed;--amber:#f59e0b;
+  --green:#10b981;--red:#ef4444;--text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;direction:rtl;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -5%,rgba(0,212,255,.07),transparent 65%),
+             radial-gradient(ellipse 50% 50% at 90% 70%,rgba(124,58,237,.05),transparent 55%),
+             radial-gradient(ellipse 40% 40% at 10% 80%,rgba(16,185,129,.04),transparent 50%);}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(7,10,15,.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0 40px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;}
+.brand{font-size:18px;font-weight:900;
+  background:linear-gradient(135deg,#fff 30%,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:8px;}
+.nav-link{font-size:12px;color:var(--text2);text-decoration:none;padding:6px 14px;
+  border-radius:8px;border:1px solid var(--border);background:var(--surf);
+  transition:all .2s;font-family:inherit;}
+.nav-link:hover{color:var(--accent);border-color:rgba(0,212,255,.3);}
+
+/* HERO */
+.hero{position:relative;z-index:1;text-align:center;padding:90px 40px 70px;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--accent);
+  border:1px solid rgba(0,212,255,.25);padding:5px 16px;border-radius:20px;
+  background:rgba(0,212,255,.05);margin-bottom:22px;animation:fadeD .5s ease both;}
+.hero h1{font-size:clamp(32px,6vw,64px);font-weight:900;line-height:1.15;
+  background:linear-gradient(145deg,#fff 20%,var(--accent) 60%,var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:fadeD .65s ease both;}
+.hero p{font-size:16px;color:var(--text2);margin-top:16px;animation:fadeD .8s ease both;}
+
+/* SECTIONS GRID */
+.sections{position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:24px;padding:20px 40px 80px;max-width:1200px;margin:auto;}
+
+.section-card{
+  position:relative;background:var(--surf);border:1px solid var(--border);
+  border-radius:24px;overflow:hidden;text-decoration:none;color:var(--text);
+  display:flex;flex-direction:column;
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+  animation:fadeU .5s ease both;
+}
+.section-card:nth-child(2){animation-delay:.1s;}
+.section-card:nth-child(3){animation-delay:.2s;}
+.section-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.5);}
+
+.card-glow-movies{--glow-color:rgba(0,212,255,.15);}
+.card-glow-books {--glow-color:rgba(16,185,129,.15);}
+.card-glow-pods  {--glow-color:rgba(245,158,11,.15);}
+.section-card:hover{box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px var(--glow-color,rgba(0,212,255,.1));}
+
+.card-top-bar{height:4px;}
+.card-top-bar.movies{background:linear-gradient(to left,#0a2540,var(--accent));}
+.card-top-bar.books {background:linear-gradient(to left,#064e3b,var(--green));}
+.card-top-bar.pods  {background:linear-gradient(to left,#78350f,var(--amber));}
+
+.card-body{padding:32px 28px 24px;flex:1;}
+.card-icon{font-size:48px;margin-bottom:16px;display:block;}
+.card-title{font-size:22px;font-weight:900;color:#fff;margin-bottom:8px;}
+.card-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:20px;}
+.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.card-tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;
+  background:var(--surf2);color:var(--text2);border:1px solid var(--border);}
+.card-stats{display:flex;gap:16px;}
+.cstat{text-align:center;}
+.cstat-n{font-size:20px;font-weight:900;}
+.cstat-l{font-size:10px;color:var(--text3);}
+
+.card-footer{padding:20px 28px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;}
+.card-cta{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.card-cta.movies{color:var(--accent);}
+.card-cta.books {color:var(--green);}
+.card-cta.pods  {color:var(--amber);}
+.card-arrow{font-size:18px;transition:transform .2s;}
+.section-card:hover .card-arrow{transform:translateX(-4px);}
+
+/* SUPABASE CONNECT BANNER */
+.connect-banner{
+  position:relative;z-index:1;
+  margin:0 40px 40px;
+  background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(124,58,237,.06));
+  border:1px solid rgba(0,212,255,.15);border-radius:16px;
+  padding:20px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.banner-icon{font-size:24px;}
+.banner-text{flex:1;}
+.banner-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.banner-sub{font-size:12px;color:var(--text2);}
+.banner-inputs{display:flex;gap:8px;flex-wrap:wrap;}
+.banner-input{
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:8px 12px;color:var(--text);font-family:monospace;font-size:11px;
+  direction:ltr;outline:none;width:220px;transition:border-color .2s;
+}
+.banner-input:focus{border-color:var(--accent);}
+.banner-btn{
+  padding:8px 18px;border-radius:8px;font-size:12px;font-weight:700;
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  color:#fff;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.banner-status{font-size:12px;font-weight:600;width:100%;}
+
+/* FEATURES */
+.features{position:relative;z-index:1;padding:0 40px 80px;max-width:1200px;margin:auto;}
+.features-title{text-align:center;font-size:20px;font-weight:800;color:#fff;margin-bottom:30px;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.feat{background:var(--surf);border:1px solid var(--border);border-radius:14px;
+  padding:20px 18px;text-align:center;}
+.feat-icon{font-size:28px;margin-bottom:10px;}
+.feat-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:5px;}
+.feat-desc{font-size:11px;color:var(--text2);line-height:1.6;}
+
+/* FOOTER */
+footer{position:relative;z-index:1;text-align:center;padding:30px;
+  border-top:1px solid var(--border);color:var(--text3);font-size:12px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--surf2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;
+  z-index:900;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:600px){
+  nav{padding:0 16px;}
+  .hero{padding:60px 20px 50px;}
+  .sections{padding:16px 16px 60px;}
+  .connect-banner{margin:0 16px 30px;flex-direction:column;}
+  .banner-input{width:100%;}
+  .features{padding:0 16px 60px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">✦ المنصة</span>
+  <div class="nav-links">
+    <a href="movies.html" class="nav-link">🎬 أفلام</a>
+    <a href="books.html"  class="nav-link">📚 كتب</a>
+    <a href="podcasts.html" class="nav-link">🎙️ بودكاست</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">✦ منصة المحتوى العربي</div>
+  <h1>اكتشف • تنظّم • شارك</h1>
+  <p>مكتبة شاملة للأفلام والمسلسلات والكتب والبودكاست<br>مع ذكاء اصطناعي يساعدك على الاكتشاف والتصنيف</p>
+</div>
+
+<!-- CONNECT BANNER -->
+<div class="connect-banner" id="connect-banner">
+  <div class="banner-icon">🗄️</div>
+  <div class="banner-text">
+    <div class="banner-title">ربط Supabase — مرة واحدة للكل</div>
+    <div class="banner-sub">أدخل بيانات قاعدة البيانات مرة واحدة وستُحفظ في جميع الصفحات تلقائياً</div>
+  </div>
+  <div class="banner-inputs">
+    <input type="text" class="banner-input" id="supa-url" placeholder="https://xxxx.supabase.co" dir="ltr">
+    <input type="password" class="banner-input" id="supa-key" placeholder="eyJhbGci... (Anon Key)" dir="ltr">
+    <button class="banner-btn" onclick="saveSupabase()">🔗 حفظ وربط</button>
+  </div>
+  <div class="banner-status" id="banner-status"></div>
+</div>
+
+<!-- SECTIONS -->
+<div class="sections">
+
+  <!-- MOVIES -->
+  <a href="movies.html" class="section-card card-glow-movies">
+    <div class="card-top-bar movies"></div>
+    <div class="card-body">
+      <span class="card-icon">🎬</span>
+      <div class="card-title">أفلام ومسلسلات</div>
+      <div class="card-desc">مكتبة منتقاة من أفضل المسلسلات والأفلام في الخيال العلمي والمؤامرة والاستخبارات ونهاية العالم</div>
+      <div class="card-tags">
+        <span class="card-tag">☣️ نهاية العالم</span>
+        <span class="card-tag">🕵️ تجسس</span>
+        <span class="card-tag">🛰️ خيال علمي</span>
+        <span class="card-tag">🛑 ممنوع</span>
+      </div>
+      <div class="card-stats">
+        <div class="cstat"><div class="cstat-n" id="movies-count" style="color:var(--accent)">—</div><div class="cstat-l">عنوان</div></div>
+        <div class="cstat"><div class="cstat-n" style="color:var(--accent)">∞</div><div class="cstat-l">مكتبة خاصة</div></div>
+        <div class="cstat"><div class="cstat-n" style="color:var(--accent)">🤖</div><div class="cstat-l">ذكاء اصطناعي</div></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-cta movies">استكشف المكتبة <span class="card-arrow">←</span></span>
+      <span style="font-size:11px;color:var(--text3);">movies.html</span>
+    </div>
+  </a>
+
+  <!-- BOOKS -->
+  <a href="books.html" class="section-card card-glow-books">
+    <div class="card-top-bar books"></div>
+    <div class="card-body">
+      <span class="card-icon">📚</span>
+      <div class="card-title">كتب وروايات</div>
+      <div class="card-desc">مكتبة الكتب والروايات في الخيال العلمي والغموض والتاريخ والفلسفة والرعب — مع توصيات بالذكاء الاصطناعي</div>
+      <div class="card-tags">
+        <span class="card-tag">🚀 خيال علمي</span>
+        <span class="card-tag">🔍 غموض</span>
+        <span class="card-tag">🏛️ تاريخي</span>
+        <span class="card-tag">🌑 رعب</span>
+      </div>
+      <div class="card-stats">
+        <div class="cstat"><div class="cstat-n" id="books-count" style="color:var(--green)">—</div><div class="cstat-l">كتاب</div></div>
+        <div class="cstat"><div class="cstat-n" style="color:var(--green)">∞</div><div class="cstat-l">قراءاتي</div></div>
+        <div class="cstat"><div class="cstat-n" style="color:var(--green)">🤖</div><div class="cstat-l">ذكاء اصطناعي</div></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-cta books">استكشف المكتبة <span class="card-arrow">←</span></span>
+      <span style="font-size:11px;color:var(--text3);">books.html</span>
+    </div>
+  </a>
+
+  <!-- PODCASTS -->
+  <a href="podcasts.html" class="section-card card-glow-pods">
+    <div class="card-top-bar pods"></div>
+    <div class="card-body">
+      <span class="card-icon">🎙️</span>
+      <div class="card-title">بودكاست</div>
+      <div class="card-desc">أفضل البودكاستات في العلوم والتكنولوجيا والتاريخ والجريمة والثقافة — منتقاة ومصنّفة بعناية</div>
+      <div class="card-tags">
+        <span class="card-tag">🔬 علوم</span>
+        <span class="card-tag">💻 تكنولوجيا</span>
+        <span class="card-tag">🕵️ جريمة</span>
+        <span class="card-tag">📜 تاريخ</span>
+      </div>
+      <div class="card-stats">
+        <div class="cstat"><div class="cstat-n" id="pods-count" style="color:var(--amber)">—</div><div class="cstat-l">بودكاست</div></div>
+        <div class="cstat"><div class="cstat-n" style="color:var(--amber)">∞</div><div class="cstat-l">قائمتي</div></div>
+        <div class="cstat"><div class="cstat-n" style="color:var(--amber)">🤖</div><div class="cstat-l">ذكاء اصطناعي</div></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-cta pods">استكشف المكتبة <span class="card-arrow">←</span></span>
+      <span style="font-size:11px;color:var(--text3);">podcasts.html</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="features-title">✨ ما يميز المنصة</div>
+  <div class="features-grid">
+    <div class="feat"><div class="feat-icon">🤖</div><div class="feat-title">ذكاء اصطناعي</div><div class="feat-desc">اكتشاف وتصنيف تلقائي بدون الحاجة لكتابة أي شيء</div></div>
+    <div class="feat"><div class="feat-icon">📚</div><div class="feat-title">مكتبة خاصة</div><div class="feat-desc">كل مستخدم له مكتبته الشخصية المحفوظة في السحاب</div></div>
+    <div class="feat"><div class="feat-icon">🗄️</div><div class="feat-title">Supabase</div><div class="feat-desc">بيانات محفوظة في السحاب تظهر من أي جهاز</div></div>
+    <div class="feat"><div class="feat-icon">🔐</div><div class="feat-title">لوحة تحكم</div><div class="feat-desc">إدارة المحتوى العام بكلمة مرور من أي مكان</div></div>
+    <div class="feat"><div class="feat-icon">🖼️</div><div class="feat-title">صور تلقائية</div><div class="feat-desc">أغلفة الكتب والأفلام تُجلب تلقائياً من الإنترنت</div></div>
+    <div class="feat"><div class="feat-icon">🌐</div><div class="feat-title">بدون تسجيل</div><div class="feat-desc">لا تسجيل دخول ولا كلمة مرور — مباشرة من المتصفح</div></div>
+  </div>
+</div>
+
+<footer>
+  <p>✦ المنصة — أفلام • كتب • بودكاست &nbsp;|&nbsp; مبني بـ Supabase + Cloudflare + Gemini AI</p>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+const SUPA_URL_KEY = 'supa_url_v1';
+const SUPA_KEY_KEY = 'supa_key_v1';
+
+function toast(msg, dur=2800){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), dur);
+}
+
+function saveSupabase(){
+  const url = document.getElementById('supa-url').value.trim();
+  const key = document.getElementById('supa-key').value.trim();
+  const status = document.getElementById('banner-status');
+  if(!url||!key){ toast('⚠️ أدخل URL و Key معاً'); return; }
+  if(!url.includes('supabase')){ toast('⚠️ URL غير صحيح'); return; }
+  localStorage.setItem(SUPA_URL_KEY, url);
+  localStorage.setItem(SUPA_KEY_KEY, key);
+  status.innerHTML = '<span style="color:var(--green)">✅ تم الحفظ — ستجد بياناتك في جميع الصفحات تلقائياً</span>';
+  toast('✅ تم حفظ بيانات Supabase!');
+  // load counts
+  loadCounts(url, key);
+}
+
+async function loadCounts(url, key){
+  try{
+    const [s,b,p] = await Promise.all([
+      fetch(`${url}/rest/v1/shows?select=id`,{headers:{'apikey':key,'Authorization':'Bearer '+key}}).then(r=>r.json()),
+      fetch(`${url}/rest/v1/books?select=id`,{headers:{'apikey':key,'Authorization':'Bearer '+key}}).then(r=>r.json()),
+      fetch(`${url}/rest/v1/podcasts?select=id`,{headers:{'apikey':key,'Authorization':'Bearer '+key}}).then(r=>r.json()),
+    ]);
+    if(Array.isArray(s)) document.getElementById('movies-count').textContent = s.length;
+    if(Array.isArray(b)) document.getElementById('books-count').textContent = b.length;
+    if(Array.isArray(p)) document.getElementById('pods-count').textContent = p.length;
+  }catch(e){}
+}
+
+// Load saved credentials
+(function init(){
+  const url = localStorage.getItem(SUPA_URL_KEY)||'';
+  const key = localStorage.getItem(SUPA_KEY_KEY)||'';
+  if(url) document.getElementById('supa-url').value = url;
+  if(key) document.getElementById('supa-key').value = '••••••••••••••••••';
+  const status = document.getElementById('banner-status');
+  if(url && key){
+    status.innerHTML='<span style="color:var(--green)">✅ بيانات Supabase محفوظة — يمكنك الذهاب لأي قسم مباشرة</span>';
+    loadCounts(url, key);
+  }
+})();
+</script>
+</body>
+</html>
