@@ -781,6 +781,7 @@ nav{
   <span class="nav-brand">🎬 دليل المسلسلات</span>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showView('public')">📺 الدليل</button>
+    <button class="nav-tab" onclick="showView('mylibrary')">📚 مكتبتي</button>
     <button class="nav-tab" onclick="askPassword()">⚙️ لوحة التحكم</button>
   </div>
   <div class="nav-right">
@@ -844,6 +845,49 @@ nav{
 </div><!-- /public -->
 
 <!-- ══════════════════════════════════
+     MY LIBRARY VIEW
+══════════════════════════════════ -->
+<div id="view-mylibrary" class="view">
+  <div class="hero" style="padding:40px 40px 30px;">
+    <div class="hero-pill">📚 مكتبتك الشخصية</div>
+    <h1 style="font-size:clamp(22px,4vw,40px);">مكتبتي الخاصة</h1>
+    <div class="hero-sub">أضف مسلسلاتك المفضلة — مكتبة خاصة بك لا يراها أحد</div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n" id="my-total">0</div><div class="stat-l">مسلسل</div></div>
+      <div class="stat"><div class="stat-n" id="my-shown">0</div><div class="stat-l">نتيجة</div></div>
+    </div>
+  </div>
+
+  <!-- MY LIBRARY ACTIONS -->
+  <div style="padding:14px 30px;background:rgba(7,10,15,.6);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="openMyModal()">＋ إضافة مسلسل</button>
+    <button class="btn btn-ghost" style="color:var(--violet);border-color:rgba(124,58,237,.35);" onclick="openDiscovery('my')">🔍 اكتشف بالذكاء الاصطناعي</button>
+    <div style="flex:1;"></div>
+    <div class="search-wrap">
+      <input type="text" id="my-search" placeholder="بحث في مكتبتي..." autocomplete="off"
+        style="background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:7px 36px 7px 12px;color:var(--text);font-family:inherit;font-size:13px;direction:rtl;outline:none;width:200px;"
+        oninput="renderMyLibrary()">
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="pill on" data-mf="all">الكل</button>
+    <button class="pill" data-mf="end">☣️ نهاية العالم</button>
+    <button class="pill" data-mf="spy">🕵️ تجسس</button>
+    <button class="pill" data-mf="sci">🛰️ خيال علمي</button>
+    <button class="pill" data-mf="banned">🛑 ممنوع</button>
+    <button class="pill" data-mf="low">📉 نادر</button>
+  </div>
+
+  <div class="main" id="my-main">
+    <div class="disc-empty" id="my-empty" style="display:none;">
+      <div class="disc-empty-icon">📚</div>
+      <p>مكتبتك فارغة — ابدأ بإضافة مسلسلاتك!</p>
+    </div>
+  </div>
+</div><!-- /mylibrary -->
+
+<!-- ══════════════════════════════════
      DASHBOARD VIEW
 ══════════════════════════════════ -->
 <div id="view-dashboard" class="view">
@@ -856,28 +900,6 @@ nav{
         <button class="btn btn-ghost" style="color:var(--violet);border-color:rgba(124,58,237,.35);" onclick="openDiscovery()">🔍 اكتشف بالذكاء الاصطناعي</button>
         <button class="btn btn-primary" onclick="openModal()">＋ إضافة مسلسل جديد</button>
       </div>
-    </div>
-
-    <!-- API KEY CARD -->
-    <div id="apikey-card" style="background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-      <div style="font-size:22px;">🤖</div>
-      <div style="flex:1;min-width:200px;">
-        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;">Google Gemini API Key <span style="font-size:10px;background:rgba(16,185,129,.15);color:var(--green);padding:2px 8px;border-radius:4px;font-weight:700;">مجاني</span></div>
-        <div style="font-size:11px;color:var(--text2);">احصل عليه من <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent);text-decoration:none;">aistudio.google.com</a> — مجاني بدون بطاقة ✅</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:260px;">
-        <div style="position:relative;flex:1;">
-          <input type="password" id="apikey-input"
-            placeholder="AIzaSy..."
-            style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:9px 36px 9px 12px;color:var(--text);font-family:monospace;font-size:12px;direction:ltr;outline:none;transition:border-color .2s;"
-            onfocus="this.style.borderColor='var(--accent)'"
-            onblur="this.style.borderColor='var(--border)'"
-            onkeydown="if(event.key==='Enter')saveAPIKey()">
-          <button onclick="toggleAPIKeyVisibility()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;" id="apikey-eye">👁</button>
-        </div>
-        <button class="btn btn-primary btn-sm" onclick="saveAPIKey()">حفظ</button>
-      </div>
-      <div id="apikey-status" style="font-size:11px;width:100%;padding-right:36px;display:none;"></div>
     </div>
 
     <!-- SUPABASE CARD -->
@@ -1097,6 +1119,53 @@ create policy "public write" on shows for all using (true);
     <div class="confirm-btns">
       <button class="btn btn-ghost" onclick="closeConfirm()">إلغاء</button>
       <button class="btn btn-danger" id="confirm-ok">حذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MY LIBRARY MODAL ══════ -->
+<div class="overlay" id="my-modal-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="my-modal-title">إضافة إلى مكتبتي</h3>
+      <button class="modal-close" onclick="closeMyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mf-id">
+      <div class="ai-bar">
+        <div class="ai-bar-text">
+          <div class="ai-bar-title">🤖 تصنيف تلقائي بالذكاء الاصطناعي</div>
+          <div class="ai-bar-sub">اكتب الاسم ← اضغط للتصنيف الفوري</div>
+        </div>
+        <button class="btn-ai" id="my-ai-btn" onclick="classifyMyShow()" type="button">
+          <span class="ai-icon">✨ صنّف</span>
+          <div class="ai-spinner"></div>
+        </button>
+      </div>
+      <div class="ai-result-box" id="my-ai-result"></div>
+      <div class="field-row">
+        <div class="field"><label>اسم المسلسل *</label><input type="text" id="mf-title" placeholder="مثال: Dark"></div>
+        <div class="field"><label>سنة البث</label><input type="text" id="mf-year" placeholder="2017 – 2020"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>عدد المواسم</label><input type="text" id="mf-seasons" placeholder="3 مواسم"></div>
+        <div class="field"><label>الحالة</label>
+          <select id="mf-status"><option value="complete">مكتمل</option><option value="ongoing">مستمر</option><option value="cancelled">مُلغى</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>التصنيف</label>
+          <select id="mf-filter"><option value="end">☣️ نهاية العالم</option><option value="spy">🕵️ تجسس</option><option value="sci">🛰️ خيال علمي</option><option value="banned">🛑 ممنوع</option><option value="low">📉 نادر</option></select>
+        </div>
+        <div class="field"><label>التقييم (0–100)</label><input type="number" id="mf-bar" min="0" max="100" value="80"></div>
+      </div>
+      <div class="field"><label>الوصف</label><textarea id="mf-desc" placeholder="وصف مختصر..."></textarea></div>
+      <div class="field"><label>التاقات (مفصولة بفواصل)</label><input type="text" id="mf-tags" placeholder="مؤامرة، سفر الزمن، تجارب سرية"></div>
+      <div class="field"><label>الأجواء</label><input type="text" id="mf-vibes" placeholder="مثال: Dark لكن في الفضاء"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeMyModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveMyShow()">💾 حفظ في مكتبتي</button>
     </div>
   </div>
 </div>
@@ -1414,6 +1483,69 @@ const STATS_ONLY = [
   {title:'The Walking Dead (مقارنة)',period:'مكتمل',viewers:'10–17 مليون',demo:'مرتفع جدًا',status:'d',reason:'—'},
 ];
 
+async function dbLoadUserShows(){
+  if(!hasSupabase()) return null;
+  const uid = getUserId();
+  try{
+    const r = await fetch(`${getSupaURL()}/rest/v1/user_shows?user_id=eq.${uid}&select=*&order=created_at.asc`,{
+      headers:{'apikey':getSupaKey(),'Authorization':'Bearer '+getSupaKey()}
+    });
+    if(!r.ok) return null;
+    const data = await r.json();
+    return data.map(s=>({
+      ...s,
+      tags: Array.isArray(s.tags)?s.tags:(s.tags?String(s.tags).split(','):[]),
+      desc: s.desc||'', bar: parseInt(s.bar)||75,
+    }));
+  }catch(e){ return null; }
+}
+
+async function dbSaveUserShow(obj){
+  if(!hasSupabase()) return false;
+  const uid = getUserId();
+  try{
+    const payload = {...obj, user_id: uid};
+    delete payload.id; // let DB generate UUID
+    const r = await fetch(`${getSupaURL()}/rest/v1/user_shows`,{
+      method:'POST',
+      headers:{
+        'apikey':getSupaKey(),'Authorization':'Bearer '+getSupaKey(),
+        'Content-Type':'application/json','Prefer':'return=representation'
+      },
+      body: JSON.stringify(payload)
+    });
+    if(!r.ok) return false;
+    const saved = await r.json();
+    return saved?.[0] || true;
+  }catch(e){ return false; }
+}
+
+async function dbUpdateUserShow(id, obj){
+  if(!hasSupabase()) return false;
+  try{
+    const r = await fetch(`${getSupaURL()}/rest/v1/user_shows?id=eq.${id}`,{
+      method:'PATCH',
+      headers:{
+        'apikey':getSupaKey(),'Authorization':'Bearer '+getSupaKey(),
+        'Content-Type':'application/json','Prefer':'return=minimal'
+      },
+      body: JSON.stringify(obj)
+    });
+    return r.ok;
+  }catch(e){ return false; }
+}
+
+async function dbDeleteUserShow(id){
+  if(!hasSupabase()) return false;
+  try{
+    const r = await fetch(`${getSupaURL()}/rest/v1/user_shows?id=eq.${id}`,{
+      method:'DELETE',
+      headers:{'apikey':getSupaKey(),'Authorization':'Bearer '+getSupaKey()}
+    });
+    return r.ok;
+  }catch(e){ return false; }
+}
+
 // ════════════════════════════════════
 // SUPABASE DATABASE
 // ════════════════════════════════════
@@ -1561,11 +1693,13 @@ function setHTML(id, val){
 // ════════════════════════════════════
 function showView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+name).classList.add('active');
+  const viewEl = document.getElementById('view-'+name);
+  if(viewEl) viewEl.classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
+  if(event?.target) event.target.classList.add('active');
   if(name==='public') renderPublic();
   if(name==='dashboard') renderDash();
+  if(name==='mylibrary') renderMyLibrary();
 }
 
 // ════════════════════════════════════
@@ -2076,7 +2210,10 @@ async function fetchPoster(title){
 const discSelections = {};
 
 let discChipsInited = false;
-function openDiscovery(){
+let discContext = 'my'; // 'my' = add to user library, 'dash' = admin
+
+function openDiscovery(ctx){
+  discContext = ctx || 'my';
   if(!discChipsInited){
     discChipsInited = true;
     document.querySelectorAll('.disc-filters .chip').forEach(c=>{
@@ -2109,10 +2246,6 @@ async function runDiscovery(append){
   // also exclude previously shown results
   const prevShown = (window._discResults||[]).map(r=>r.title.toLowerCase());
   const exclude = [...alreadyHave, ...prevShown];
-
-  const AI_KEY=getAIKey(); if(!AI_KEY){
-    toast('⚠️ أدخل API Key أولاً في لوحة التحكم'); return;
-  }
 
   btn.classList.add('loading'); btn.disabled=true;
 
@@ -2163,34 +2296,8 @@ async function runDiscovery(append){
   const prompt = promptLines.filter(Boolean).join('\n');
 
   try{
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${AI_KEY}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        contents:[{parts:[{text:prompt}]}],
-        generationConfig:{
-          temperature:0.7,
-          maxOutputTokens:8192
-        },
-
-      })
-    });
-    if(!res.ok){
-      const e=await res.json().catch(()=>({}));
-      throw new Error(e?.error?.message||'خطأ '+res.status);
-    }
-    const data = await res.json();
-    console.log('Gemini full response:', JSON.stringify(data).substring(0,600));
-
-    // collect all text parts (skip thought parts)
-    const parts = data.candidates?.[0]?.content?.parts || [];
-    let raw = parts
-      .filter(p => p.text && !p.thought)
-      .map(p => p.text)
-      .join('').trim();
-    // fallback: just take last part
-    if(!raw) raw = (parts[parts.length-1]?.text || '').trim();
-    console.log('Gemini raw text:', raw.substring(0,400));
+    const raw = await callAI(prompt, 'discover');
+    console.log('AI raw text:', raw.substring(0,400));
 
     // robust JSON extraction — multiple strategies
     let results;
@@ -2322,35 +2429,31 @@ async function addDiscovered(i){
   const tags = typeof r.tags==='string'
     ? r.tags.split(/[,،]/).map(t=>t.trim()).filter(Boolean)
     : (r.tags||[]);
-
   const obj = {
-    id: nextId(),
-    title: r.title,
-    year: r.year||'',
-    seasons: r.seasons||'',
-    status: r.status||'complete',
-    filter: r.filter||'sci',
-    type: r.filter||'sci',
-    desc: r.desc||'',
-    tags,
-    vibes: r.vibes||'',
-    bar: r.bar||75,
-    badge_extra: r.badge_extra||'',
-    poster: r._poster||'',
+    id: nextId(), title: r.title, year: r.year||'', seasons: r.seasons||'',
+    status: r.status||'complete', filter: r.filter||'sci', type: r.filter||'sci',
+    desc: r.desc||r.why||'', tags, vibes: r.vibes||'',
+    bar: r.bar||75, badge_extra: r.badge_extra||'', poster: r._poster||'',
   };
 
-  shows.push(obj);
-  if(dbConnected) await dbSave(obj); else saveLocal();
-  renderDash();
-
-  // mark as added
-  const card = document.getElementById(`drc-${i}`);
-  if(card){
-    card.classList.add('added');
-    const da = document.getElementById(`da-${i}`);
-    if(da) da.innerHTML=`<span class="added-tag">✅ تمت الإضافة</span>`;
+  if(discContext === 'my'){
+    if(!myShows) myShows=[];
+    const saved = hasSupabase() ? await dbSaveUserShow(obj) : null;
+    myShows.push(saved && typeof saved==='object' && saved.id ? saved : obj);
+    if(!saved) saveMyLocal();
+    renderMyLibrary();
+    toast(`✅ "${r.title}" أُضيف لمكتبتك`);
+  } else {
+    shows.push(obj);
+    if(dbConnected) await dbSave(obj); else saveLocal();
+    renderDash();
+    toast(`✅ "${r.title}" أُضيف للمكتبة العامة`);
   }
-  toast(`✅ تمت إضافة "${r.title}"`);
+
+  const card = document.getElementById(`drc-${i}`);
+  if(card){ card.classList.add('added'); }
+  const da = document.getElementById(`da-${i}`);
+  if(da) da.innerHTML=`<span class="added-tag">✅ تمت الإضافة</span>`;
 }
 
 function skipDiscovered(i){
@@ -2375,117 +2478,283 @@ async function addAllDiscovered(){
 const AI_KEY_STORAGE  = 'gemini_api_key_v1';
 const SUPA_URL_STORAGE = 'supa_url_v1';
 const SUPA_KEY_STORAGE = 'supa_key_v1';
+const WORKER_URL = 'https://ai-proxy.lassouedeoussama.workers.dev';
+const USER_ID_KEY = 'shows_user_id';
+
 function getAIKey(){  return localStorage.getItem(AI_KEY_STORAGE)||''; }
 function setAIKey(k){ localStorage.setItem(AI_KEY_STORAGE, k.trim()); }
 function getSupaURL(){ return localStorage.getItem(SUPA_URL_STORAGE)||''; }
 function getSupaKey(){ return localStorage.getItem(SUPA_KEY_STORAGE)||''; }
 function hasSupabase(){ return !!(getSupaURL()&&getSupaKey()); }
 
+// get or create persistent user ID
+function getUserId(){
+  let uid = localStorage.getItem(USER_ID_KEY);
+  if(!uid){
+    uid = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem(USER_ID_KEY, uid);
+  }
+  return uid;
+}
+
+// unified AI call via Worker (no API key needed client-side)
+async function callAI(prompt, type='discover'){
+  const res = await fetch(WORKER_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ prompt, type })
+  });
+  if(!res.ok){
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e?.error || 'خطأ في الاتصال بالذكاء الاصطناعي');
+  }
+  const data = await res.json();
+  // extract text from Gemini response
+  const parts = data.candidates?.[0]?.content?.parts || [];
+  let text = parts.filter(p=>p.text&&!p.thought).map(p=>p.text).join('').trim();
+  if(!text) text = (parts[parts.length-1]?.text||'').trim();
+  return text;
+}
+
+// ════════════════════════════════════
+// AI HELPERS
+// ════════════════════════════════════
+function parseAIJson(raw, type='object'){
+  const strategies = type==='array' ? [
+    ()=>JSON.parse(raw),
+    ()=>{const m=raw.match(/\[[\s\S]*\]/);if(!m)throw 0;return JSON.parse(m[0]);},
+    ()=>{const c=raw.replace(/```json|```/g,'').trim();const m=c.match(/\[[\s\S]*\]/);if(!m)throw 0;return JSON.parse(m[0]);},
+    ()=>{const c=raw.replace(/,\s*([}\]])/g,'$1').replace(/```json|```/g,'');const m=c.match(/\[[\s\S]*\]/);if(!m)throw 0;return JSON.parse(m[0]);},
+  ] : [
+    ()=>JSON.parse(raw),
+    ()=>{const c=raw.replace(/```json|```/g,'').trim();return JSON.parse(c);},
+    ()=>{const m=raw.match(/\{[\s\S]*\}/);if(!m)throw 0;return JSON.parse(m[0]);},
+    ()=>{const m=raw.replace(/,\s*([}\]])/g,'$1').match(/\{[\s\S]*\}/);if(!m)throw 0;return JSON.parse(m[0]);},
+  ];
+  for(const s of strategies){ try{const r=s();if(r)return r;}catch(e){} }
+  return null;
+}
+
+const CLASSIFY_PROMPT = (title,desc)=>`You are a TV/movie expert. Return ONLY valid JSON, no extra text.
+Title: ${title||'unknown'}
+Description: ${desc||'unknown'}
+Return exactly: {"filter":"sci","type":"sci","tags":["t1","t2","t3"],"vibes":"mood description","bar":80,"badge_extra":"","desc_ar":"Arabic description","reasoning":"one sentence"}
+filter/type: end or spy or sci or banned or low
+badge_extra: empty string or "banned" or "low"
+bar: integer 0-100`;
+
 async function classifyWithAI(){
   const title = document.getElementById('f-title').value.trim();
   const desc  = document.getElementById('f-desc').value.trim();
-
-  if(!title && !desc){ toast('⚠️ اكتب اسم المسلسل أو وصفًا أولاً'); return; }
-  const AI_KEY = getAIKey();
-  if(!AI_KEY){
-    toast('⚠️ أدخل API Key أولاً في لوحة التحكم'); return;
-  }
-
+  if(!title && !desc){ toast('⚠️ اكتب اسم المسلسل أولاً'); return; }
   const btn = document.getElementById('ai-btn');
   const resultBox = document.getElementById('ai-result');
-  btn.classList.add('loading');
-  btn.disabled = true;
+  btn.classList.add('loading'); btn.disabled=true;
   resultBox.classList.remove('show');
-
-  const prompt = `أنت خبير في تصنيف المسلسلات الأجنبية. أرجع JSON فقط بدون أي نص.
-
-اسم المسلسل: ${title || 'غير محدد'}
-الوصف: ${desc || 'غير محدد'}
-
-الشكل المطلوب بالضبط:
-{"filter":"sci","type":"sci","tags":["كلمة1","كلمة2","كلمة3"],"vibes":"وصف الأجواء","bar":80,"badge_extra":"","desc_ar":"وصف عربي","reasoning":"السبب"}
-
-قيم filter و type: end أو spy أو sci أو banned أو low
-قيم badge_extra: سلسلة فارغة أو banned أو low
-bar: رقم من 0 إلى 100
-
-end=نهاية العالم/كوارث/فيروسات، spy=تجسس/CIA/استخبارات، sci=خيال علمي/فضاء/ذكاء اصطناعي، banned=رقابة/منع، low=نادر المشاهدة`;
-
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${AI_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 2048
-        },
-
-      })
-    });
-
-    if(!res.ok){
-      const err = await res.json().catch(()=>({}));
-      throw new Error(err?.error?.message || `خطأ ${res.status}`);
-    }
-
-    const data = await res.json();
-    const parts = data.candidates?.[0]?.content?.parts || [];
-    let raw = parts
-      .filter(p => p.text && !p.thought)
-      .map(p => p.text)
-      .join('').trim();
-    if(!raw) raw = (parts[parts.length-1]?.text || '').trim();
-    console.log('Gemini classify raw:', raw.substring(0,300));
-
-    // try multiple parse strategies
-    let result = null;
-    for(const strategy of [
-      ()=>JSON.parse(raw),
-      ()=>{ const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c); },
-      ()=>{ const m=raw.match(/\{[\s\S]*\}/); if(!m) throw new Error('no obj'); return JSON.parse(m[0]); },
-      ()=>{ const m=raw.replace(/,\s*([}\]])/g,'$1').match(/\{[\s\S]*\}/); if(!m) throw new Error('no obj2'); return JSON.parse(m[0]); },
-    ]){
-      try{ result = strategy(); if(result) break; } catch(e){}
-    }
+  try{
+    const raw = await callAI(CLASSIFY_PROMPT(title,desc), 'classify');
+    const result = parseAIJson(raw, 'object');
     if(!result) throw new Error('لم يتم الحصول على نتيجة صحيحة');
-
     if(result.filter)   document.getElementById('f-filter').value = result.filter;
     if(result.type)     document.getElementById('f-type').value   = result.type;
     if(result.bar)      document.getElementById('f-bar').value    = result.bar;
-    if(result.badge_extra !== undefined) document.getElementById('f-extra').value = result.badge_extra;
+    if(result.badge_extra!==undefined) document.getElementById('f-extra').value = result.badge_extra;
     if(result.tags?.length) document.getElementById('f-tags').value = result.tags.join('، ');
     if(result.vibes)    document.getElementById('f-vibes').value  = result.vibes;
     if(result.desc_ar && !desc) document.getElementById('f-desc').value = result.desc_ar;
-
-    const filterLabels = {end:'☣️ نهاية العالم', spy:'🕵️ تجسس', sci:'🛰️ خيال علمي', banned:'🛑 ممنوع', low:'📉 نادر'};
-    resultBox.innerHTML = `
-      <strong>✅ تم التصنيف بنجاح!</strong><br>
-      📂 التصنيف: <strong>${filterLabels[result.filter]||result.filter}</strong> &nbsp;|&nbsp;
-      ⭐ التقييم: <strong>${result.bar}%</strong><br>
-      🏷️ التاقات: <strong>${(result.tags||[]).join(' • ')}</strong><br>
-      💬 الأجواء: <em>${result.vibes||''}</em><br>
-      🤖 السبب: ${result.reasoning||''}
-    `;
+    const fl={end:'☣️ نهاية العالم',spy:'🕵️ تجسس',sci:'🛰️ خيال علمي',banned:'🛑 ممنوع',low:'📉 نادر'};
+    resultBox.innerHTML=`<strong>✅ تم التصنيف!</strong><br>📂 ${fl[result.filter]||result.filter} | ⭐ ${result.bar}%<br>🏷️ ${(result.tags||[]).join(' • ')}<br>💬 <em>${result.vibes||''}</em>`;
     resultBox.classList.add('show');
-    toast('✅ تم التصنيف — راجع الحقول أدناه!');
+    toast('✅ تم التصنيف!');
+    if(!document.getElementById('f-poster').value)
+      fetchPoster(title).then(url=>{ if(url) document.getElementById('f-poster').value=url; });
+  }catch(e){
+    resultBox.innerHTML=`<strong style="color:var(--red)">❌ خطأ:</strong> ${e.message}`;
+    resultBox.classList.add('show'); toast('❌ '+e.message);
+  }finally{ btn.classList.remove('loading'); btn.disabled=false; }
+}
 
-    // auto-fetch poster
-    if(!document.getElementById('f-poster').value){
-      fetchPoster(title).then(url=>{
-        if(url) document.getElementById('f-poster').value = url;
+// ════════════════════════════════════
+// MY LIBRARY STATE
+// ════════════════════════════════════
+let myShows = [];
+let myFilter = 'all';
+
+function saveMyLocal(){
+  try{ localStorage.setItem('my_shows_v1', JSON.stringify(myShows)); }catch(e){}
+}
+function loadMyLocal(){
+  try{ const s=localStorage.getItem('my_shows_v1'); return s?JSON.parse(s):[]; }catch(e){ return []; }
+}
+
+async function loadMyShows(){
+  if(hasSupabase()){
+    const data = await dbLoadUserShows();
+    if(data&&Array.isArray(data)){ myShows=data; return; }
+  }
+  myShows = loadMyLocal();
+}
+
+// ════════════════════════════════════
+// MY LIBRARY RENDER
+// ════════════════════════════════════
+function renderMyLibrary(){
+  const main = document.getElementById('my-main');
+  if(!main) return;
+  const q = (document.getElementById('my-search')||{}).value?.toLowerCase()||'';
+  const filtered = myShows.filter(s=>{
+    const mf = myFilter==='all' || s.filter===myFilter || (myFilter==='banned'&&s.badge_extra==='banned') || (myFilter==='low'&&s.badge_extra==='low');
+    const mq = !q || s.title?.toLowerCase().includes(q) || (s.tags||[]).some(t=>t.includes(q)) || (s.desc||'').includes(q);
+    return mf&&mq;
+  });
+  setEl('my-total', myShows.length);
+  setEl('my-shown', filtered.length);
+  const emptyEl = document.getElementById('my-empty');
+  main.innerHTML='';
+  if(!filtered.length){
+    if(emptyEl){ emptyEl.style.display='flex'; main.appendChild(emptyEl); } return;
+  }
+  if(emptyEl) emptyEl.style.display='none';
+  const grid = document.createElement('div');
+  grid.className='cards';
+  filtered.forEach((s,i)=>{
+    const card = buildCard(s,i);
+    // replace footer buttons for personal library
+    const foot = card.querySelector('.card-foot');
+    if(foot){
+      foot.innerHTML=`
+        <span class="card-seasons">${s.seasons||''}</span>
+        <div style="display:flex;gap:6px;">
+          <button class="card-expand" style="color:var(--accent);">تفاصيل ▾</button>
+          <button onclick="deleteMyShow('${s.id}')" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:inherit;">🗑️</button>
+        </div>`;
+      foot.querySelector('.card-expand')?.addEventListener('click',e=>{
+        e.stopPropagation();
+        const exp=card.classList.toggle('exp');
+        e.target.textContent=exp?'إخفاء ▴':'تفاصيل ▾';
+        if(exp){const b=card.querySelector('.bar-fill');setTimeout(()=>b&&(b.style.width=b.dataset.w),50);}
       });
     }
+    grid.appendChild(card);
+  });
+  main.appendChild(grid);
+}
 
-  } catch(e) {
-    resultBox.innerHTML = `<strong style="color:var(--red)">❌ خطأ:</strong> ${e.message}`;
-    resultBox.classList.add('show');
-    toast('❌ ' + e.message);
-  } finally {
-    btn.classList.remove('loading');
-    btn.disabled = false;
+async function deleteMyShow(id){
+  myShows = myShows.filter(s=>s.id!==id && s.id!==id.toString());
+  if(hasSupabase()) await dbDeleteUserShow(id); else saveMyLocal();
+  renderMyLibrary();
+  toast('🗑️ تم الحذف من مكتبتك');
+}
+
+// MY LIBRARY FILTERS
+document.querySelectorAll('[data-mf]').forEach(p=>{
+  p.addEventListener('click',()=>{
+    document.querySelectorAll('[data-mf]').forEach(x=>x.classList.remove('on'));
+    p.classList.add('on'); myFilter=p.dataset.mf; renderMyLibrary();
+  });
+});
+
+// ════════════════════════════════════
+// MY LIBRARY MODAL
+// ════════════════════════════════════
+let myEditId = null;
+
+function openMyModal(id){
+  myEditId = id||null;
+  const aiRes = document.getElementById('my-ai-result');
+  if(aiRes) aiRes.classList.remove('show');
+  document.getElementById('my-modal-title').textContent = id?'تعديل في مكتبتي':'إضافة إلى مكتبتي';
+  if(id){
+    const s=myShows.find(x=>x.id===id||x.id===id.toString());
+    if(s){
+      document.getElementById('mf-title').value  = s.title||'';
+      document.getElementById('mf-year').value   = s.year||'';
+      document.getElementById('mf-seasons').value= s.seasons||'';
+      document.getElementById('mf-status').value = s.status||'complete';
+      document.getElementById('mf-filter').value = s.filter||'sci';
+      document.getElementById('mf-bar').value    = s.bar||80;
+      document.getElementById('mf-desc').value   = s.desc||'';
+      document.getElementById('mf-tags').value   = (s.tags||[]).join('، ');
+      document.getElementById('mf-vibes').value  = s.vibes||'';
+    }
+  } else {
+    ['mf-title','mf-year','mf-seasons','mf-desc','mf-tags','mf-vibes'].forEach(fid=>{
+      const el=document.getElementById(fid); if(el) el.value='';
+    });
+    document.getElementById('mf-status').value='complete';
+    document.getElementById('mf-filter').value='sci';
+    document.getElementById('mf-bar').value=80;
   }
+  document.getElementById('my-modal-overlay').classList.add('open');
+}
+function closeMyModal(){
+  document.getElementById('my-modal-overlay').classList.remove('open');
+}
+document.getElementById('my-modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('my-modal-overlay')) closeMyModal();
+});
+
+async function saveMyShow(){
+  const title = document.getElementById('mf-title').value.trim();
+  const desc  = document.getElementById('mf-desc').value.trim();
+  if(!title){ toast('⚠️ اسم المسلسل مطلوب'); return; }
+  const tags = document.getElementById('mf-tags').value.split(/[,،]/).map(t=>t.trim()).filter(Boolean);
+  const obj = {
+    id: myEditId || nextId(), title,
+    year: document.getElementById('mf-year').value.trim(),
+    seasons: document.getElementById('mf-seasons').value.trim(),
+    status: document.getElementById('mf-status').value,
+    filter: document.getElementById('mf-filter').value,
+    type:   document.getElementById('mf-filter').value,
+    desc, tags,
+    vibes: document.getElementById('mf-vibes').value.trim(),
+    bar:   parseInt(document.getElementById('mf-bar').value)||80,
+    badge_extra:'', poster:'',
+  };
+  // fetch poster
+  fetchPoster(title).then(async url=>{
+    if(url){ obj.poster=url; const idx=myShows.findIndex(s=>s.id===obj.id); if(idx>-1){myShows[idx].poster=url;if(hasSupabase())await dbUpdateUserShow(obj.id,{poster:url});else saveMyLocal();renderMyLibrary();} }
+  });
+  if(myEditId){
+    const idx=myShows.findIndex(s=>s.id===myEditId||s.id===myEditId.toString());
+    if(idx>-1) myShows[idx]=obj; else myShows.push(obj);
+    if(hasSupabase()) await dbUpdateUserShow(myEditId,obj); else saveMyLocal();
+    toast('✅ تم التحديث في مكتبتك');
+  } else {
+    const saved = hasSupabase() ? await dbSaveUserShow(obj) : null;
+    myShows.push(saved&&typeof saved==='object'&&saved.id ? saved : obj);
+    if(!saved) saveMyLocal();
+    toast('✅ تمت الإضافة لمكتبتك');
+  }
+  closeMyModal();
+  renderMyLibrary();
+}
+
+async function classifyMyShow(){
+  const title = document.getElementById('mf-title').value.trim();
+  const desc  = document.getElementById('mf-desc').value.trim();
+  if(!title&&!desc){ toast('⚠️ اكتب اسم المسلسل أولاً'); return; }
+  const btn = document.getElementById('my-ai-btn');
+  const resultBox = document.getElementById('my-ai-result');
+  btn.classList.add('loading'); btn.disabled=true;
+  resultBox.classList.remove('show');
+  try{
+    const raw = await callAI(CLASSIFY_PROMPT(title,desc), 'classify');
+    const result = parseAIJson(raw,'object');
+    if(!result) throw new Error('لم يتم الحصول على نتيجة');
+    if(result.filter) document.getElementById('mf-filter').value=result.filter;
+    if(result.bar)    document.getElementById('mf-bar').value=result.bar;
+    if(result.tags?.length) document.getElementById('mf-tags').value=result.tags.join('، ');
+    if(result.vibes)  document.getElementById('mf-vibes').value=result.vibes;
+    if(result.desc_ar&&!desc) document.getElementById('mf-desc').value=result.desc_ar;
+    const fl={end:'☣️ نهاية العالم',spy:'🕵️ تجسس',sci:'🛰️ خيال علمي',banned:'🛑 ممنوع',low:'📉 نادر'};
+    resultBox.innerHTML=`<strong>✅ تم التصنيف!</strong> ${fl[result.filter]||''} | ${result.bar}%`;
+    resultBox.classList.add('show'); toast('✅ تم التصنيف!');
+  }catch(e){
+    resultBox.innerHTML=`<strong style="color:var(--red)">❌</strong> ${e.message}`;
+    resultBox.classList.add('show'); toast('❌ '+e.message);
+  }finally{ btn.classList.remove('loading'); btn.disabled=false; }
 }
 
 // إخفاء نتيجة AI عند فتح موديل جديد — مدمج في openModal الأصلي أعلاه
@@ -2636,16 +2905,11 @@ document.getElementById('export-overlay').addEventListener('click',e=>{
 // ════════════════════════════════════
 (async function init(){
   await load();
+  await loadMyShows();
   renderPublic();
-
-  // auto-connect Supabase if credentials exist
-  if(hasSupabase() && !dbConnected){
-    const data = await dbLoad();
-    if(data && Array.isArray(data) && data.length > 0){
-      shows = data;
-      dbConnected = true;
-      renderPublic();
-    }
+  if(hasSupabase()&&!dbConnected){
+    const data=await dbLoad();
+    if(data&&Array.isArray(data)&&data.length>0){shows=data;dbConnected=true;renderPublic();}
   }
 })();
 </script>
