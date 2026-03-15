@@ -2509,10 +2509,20 @@ async function callAI(prompt, type='discover'){
     throw new Error(e?.error || 'خطأ في الاتصال بالذكاء الاصطناعي');
   }
   const data = await res.json();
-  // extract text from Gemini response
+
+  // handle Gemini error
+  if(data.error) throw new Error(data.error.message || data.error || 'خطأ من Gemini');
+
+  // use _text field added by Worker (cleanest approach)
+  if(data._text) return data._text;
+
+  // fallback: manual extraction
   const parts = data.candidates?.[0]?.content?.parts || [];
   let text = parts.filter(p=>p.text&&!p.thought).map(p=>p.text).join('').trim();
-  if(!text) text = (parts[parts.length-1]?.text||'').trim();
+  if(!text) text = parts.filter(p=>p.text).map(p=>p.text).join('').trim();
+  if(!text && parts.length) text = (parts[parts.length-1]?.text||'').trim();
+
+  console.log('AI text length:', text.length, '| preview:', text.substring(0,100));
   return text;
 }
 
