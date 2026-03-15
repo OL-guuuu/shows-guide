@@ -1496,17 +1496,16 @@ let confirmCb = null;
 let dbConnected = false;
 
 async function load(){
-  // try Supabase first
+  // try Supabase first if credentials saved
   if(hasSupabase()){
     showDBStatus('loading');
     const data = await dbLoad();
     if(data && Array.isArray(data)){
-      shows = data;
+      shows = data.length > 0 ? data : JSON.parse(JSON.stringify(DEFAULT_SHOWS));
       dbConnected = true;
       showDBStatus('connected');
-      // sync defaults if DB is empty
-      if(shows.length===0){
-        shows = JSON.parse(JSON.stringify(DEFAULT_SHOWS));
+      // push defaults to DB if empty
+      if(data.length === 0){
         for(const s of shows){ await dbSave(s); }
       }
       return;
@@ -2638,6 +2637,16 @@ document.getElementById('export-overlay').addEventListener('click',e=>{
 (async function init(){
   await load();
   renderPublic();
+
+  // auto-connect Supabase if credentials exist
+  if(hasSupabase() && !dbConnected){
+    const data = await dbLoad();
+    if(data && Array.isArray(data) && data.length > 0){
+      shows = data;
+      dbConnected = true;
+      renderPublic();
+    }
+  }
 })();
 </script>
 </body>
