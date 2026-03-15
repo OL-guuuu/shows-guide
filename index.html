@@ -2145,7 +2145,8 @@ async function runDiscovery(append){
           temperature:0.7,
           maxOutputTokens:3000,
           responseMimeType:'application/json'
-        }
+        },
+        thinkingConfig:{ thinkingBudget: 0 }
       })
     });
     if(!res.ok){
@@ -2153,19 +2154,23 @@ async function runDiscovery(append){
       throw new Error(e?.error?.message||'خطأ '+res.status);
     }
     const data = await res.json();
-    const raw  = (data.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
-    console.log('Gemini raw response:', raw.substring(0,300));
+    console.log('Gemini full response:', JSON.stringify(data).substring(0,500));
+
+    // extract text — handle both thinking and non-thinking responses
+    let raw = '';
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    for(const part of parts){
+      if(part.text && !part.thought){ raw = part.text.trim(); break; }
+    }
+    if(!raw) raw = (parts[parts.length-1]?.text||'').trim();
+    console.log('Gemini raw text:', raw.substring(0,300));
 
     // robust JSON extraction — multiple strategies
     let results;
     const parseStrategies = [
-      // 1. direct parse if already clean JSON
       ()=> JSON.parse(raw),
-      // 2. extract array between [ ]
       ()=> { const m=raw.match(/\[[\s\S]*\]/); if(!m) throw new Error('no array'); return JSON.parse(m[0]); },
-      // 3. strip markdown code blocks then extract
       ()=> { const c=raw.replace(/```json|```/g,'').trim(); const m=c.match(/\[[\s\S]*\]/); if(!m) throw new Error('no array after strip'); return JSON.parse(m[0]); },
-      // 4. fix trailing commas then extract
       ()=> { const c=raw.replace(/,\s*([}\]])/g,'$1').replace(/```json|```/g,''); const m=c.match(/\[[\s\S]*\]/); if(!m) throw new Error('no array after fix'); return JSON.parse(m[0]); },
     ];
 
@@ -2391,7 +2396,8 @@ end=نهاية العالم/كوارث/فيروسات، spy=تجسس/CIA/است�
           temperature: 0.3,
           maxOutputTokens: 600,
           responseMimeType: 'application/json'
-        }
+        },
+        thinkingConfig: { thinkingBudget: 0 }
       })
     });
 
@@ -2401,14 +2407,20 @@ end=نهاية العالم/كوارث/فيروسات، spy=تجسس/CIA/است�
     }
 
     const data = await res.json();
-    const raw = (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
+    // extract text — handle thinking model parts
+    let raw = '';
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    for(const part of parts){
+      if(part.text && !part.thought){ raw = part.text.trim(); break; }
+    }
+    if(!raw) raw = (parts[parts.length-1]?.text||'').trim();
     console.log('Gemini classify raw:', raw.substring(0,200));
 
     // try multiple parse strategies
     let result = null;
     for(const strategy of [
       ()=>JSON.parse(raw),
-      ()=>{ const m=raw.replace(/```json|```/g,'').trim(); return JSON.parse(m); },
+      ()=>{ const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c); },
       ()=>{ const m=raw.match(/\{[\s\S]*\}/); if(!m) throw new Error('no obj'); return JSON.parse(m[0]); },
       ()=>{ const m=raw.replace(/,\s*([}\]])/g,'$1').match(/\{[\s\S]*\}/); if(!m) throw new Error('no obj2'); return JSON.parse(m[0]); },
     ]){
